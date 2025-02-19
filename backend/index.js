@@ -1,14 +1,17 @@
 import express from "express";
+import path from "path";
 import "express-async-errors";
 import cors from "cors";
 import sequelize from "./src/configs/database.js";
 import keys from "./src/configs/keys.js";
-import path from "path";
+import seedAdmin from "./src/configs/seedAdmin.js";
 import {
   notFoundHandler,
   errorHandler,
 } from "./src/middlewares/errorHandlerMiddleware.js";
+
 import authRoute from "./src/routes/authRoute.js";
+import adminRoute from "./src/routes/adminRoute.js";
 
 const app = express();
 
@@ -17,12 +20,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use("/public", express.static(path.join(path.resolve(), "public")));
 
-sequelize
+await sequelize
   .sync({ alter: true })
   .then(() => console.log("✅ Database connected and synchronized."))
   .catch((err) => console.error("❌ Database synchronization failed:", err));
+  
+await seedAdmin();
 
 app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/admin", adminRoute);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

@@ -67,9 +67,10 @@ export const verifyEmail = async (req, res) => {
 
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
-
+  
   // Find verified user
   const user = await User.findOne({ where: { email, isVerified: true } });
+  
   if (!user || !(await user.matchPassword(password))) {
     throw new HttpError(401, "Incorrect email or password.");
   }
@@ -82,7 +83,9 @@ export const loginUser = async (req, res) => {
     user: {
       id: user.id,
       firstName: user.firstName,
+      lastName: user.lastName,
       email: user.email,
+      role: user.role,
       token,
     },
   });

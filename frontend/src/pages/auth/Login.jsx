@@ -9,6 +9,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { ROLES } from "@/constants";
+import useAuth from "@/contexts/AuthProvider";
 import { loginSchema } from "@/schemas/authSchema";
 import { postRequest } from "@/utils/apiHelpers";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,6 +18,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 
 export default function Login() {
+  const { setCurrentUser } = useAuth();
   const navigate = useNavigate();
 
   const form = useForm({
@@ -29,7 +32,12 @@ export default function Login() {
   async function onSubmit(data) {
     const resData = await postRequest({ url: "/api/v1/auth/login", data });
     if (resData.success) {
-      navigate("/");
+      setCurrentUser(resData.user);
+      if (resData.user.role === ROLES.ADMIN) {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
     } else {
       console.log("Error:", resData.message);
     }

@@ -3,9 +3,16 @@ import { ModeToggle } from "./ModeTogge";
 import NavButton from "./NavButton";
 import { Input } from "./ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
+import { useNavigate } from "react-router";
 
 export default function UserActions() {
   const { currentUser, clearUser } = useAuth();
+  const navigate = useNavigate();
+
+  function handleSignout() {
+    clearUser();
+    navigate("/")
+  }
 
   return (
     <div className="flex items-center space-x-4">
@@ -18,7 +25,7 @@ export default function UserActions() {
               0
             )}${currentUser.lastName.charAt(0)}`}</AvatarFallback>
           </Avatar>
-          <NavButton to="/login" onClick={clearUser}>
+          <NavButton to="/login" onClick={handleSignout}>
             Log Out
           </NavButton>
         </>

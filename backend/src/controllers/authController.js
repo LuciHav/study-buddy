@@ -16,11 +16,11 @@ export const signupUser = async (req, res) => {
   const verificationCode = generateRandomCode();
   const verificationCodeExpire = new Date(Date.now() + 60 * 60 * 1000);
 
-  // // Send verification email
-  // await sendEmailWithTemplate(email, EMAIL_TEMPLATES.WELCOME, {
-  //   firstName,
-  //   verificationCode,
-  // });
+  // Send verification email
+  await sendEmailWithTemplate(email, EMAIL_TEMPLATES.WELCOME, {
+    firstName,
+    verificationCode,
+  });
 
   // Create new user
   await User.create({
@@ -101,10 +101,10 @@ export const forgotPassword = async (req, res, _next) => {
   const verificationCodeExpire = new Date(Date.now() + 60 * 60 * 1000);
 
   // Send verification email
-  // await sendEmailWithTemplate(email, EMAIL_TEMPLATES.PASSWORD_RESET, {
-  //   name: user.firstName,
-  //   verificationCode,
-  // });
+  await sendEmailWithTemplate(email, EMAIL_TEMPLATES.PASSWORD_RESET, {
+    name: user.firstName,
+    verificationCode,
+  });
 
   user.verificationCode = verificationCode;
   user.verificationCodeExpire = verificationCodeExpire;

@@ -27,7 +27,8 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import Logo from "./Logo";
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
+import useAuth from "@/contexts/AuthProvider";
 
 // Menu items.
 const items = [
@@ -59,6 +60,14 @@ const items = [
 ];
 
 export function AppSidebar() {
+  const { currentUser, clearUser } = useAuth();
+
+  const navigate = useNavigate();
+
+  function handleSignout() {
+    clearUser();
+    navigate("/login");
+  }
   return (
     <Sidebar>
       <SidebarHeader>
@@ -66,7 +75,7 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-        <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarGroupLabel>Application</SidebarGroupLabel>
 
           <SidebarGroupContent>
             <SidebarMenu>
@@ -90,7 +99,7 @@ export function AppSidebar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
-                  <User2 /> Username
+                  <User2 /> {currentUser.firstName}
                   <ChevronUp className="ml-auto" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
@@ -101,11 +110,8 @@ export function AppSidebar() {
                 <DropdownMenuItem>
                   <span>Account</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <span>Billing</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <span>Sign out</span>
+                <DropdownMenuItem className="cursor-pointer">
+                  <span onClick={handleSignout}>Sign out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

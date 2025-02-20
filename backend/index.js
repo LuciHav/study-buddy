@@ -12,6 +12,7 @@ import {
 
 import authRoute from "./src/routes/authRoute.js";
 import adminRoute from "./src/routes/adminRoute.js";
+import tutorRoute from "./src/routes/tutorRoute.js";
 
 const app = express();
 
@@ -21,7 +22,7 @@ app.use(cors());
 app.use("/public", express.static(path.join(path.resolve(), "public")));
 
 await sequelize
-  .sync({ alter: true })
+  .sync()
   .then(() => console.log("✅ Database connected and synchronized."))
   .catch((err) => console.error("❌ Database synchronization failed:", err));
   
@@ -29,6 +30,7 @@ await seedAdmin();
 
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/admin", adminRoute);
+app.use("/api/v1/tutors", tutorRoute);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

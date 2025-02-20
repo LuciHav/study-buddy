@@ -33,13 +33,14 @@ export default function App() {
           <Route path="forgot-password" element={<ForgotPassword />} />
           <Route path="reset-password" element={<ResetPassword />} />
 
+          <Route path="tutors" element={<Tutors />} />
+          
           <Route element={<AuthRoute role={ROLES.USER} />}>
             <Route path="posts">
               <Route index element={<Posts />} />
               <Route path="create" element={<CreatePost />} />
               <Route path="edit" element={<EditPost />} />
             </Route>
-            <Route path="tutors" element={<Tutors />} />
           </Route>
 
           <Route path="*" element={<PageNotFound />} />

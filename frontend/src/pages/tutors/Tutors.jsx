@@ -1,3 +1,4 @@
+import Loader from "@/components/Loader";
 import TutorCard from "@/components/TutorCard";
 import { getRequest } from "@/utils/apiHelpers";
 import { useEffect, useState } from "react";
@@ -20,10 +21,8 @@ export default function Tutors() {
     })();
   }, []);
 
-  if (loading) return <p>Loading</p>;
+  if (loading) return <Loader/>;
   if (error) return <p>An Error Occured</p>;
-
-  console.log(tutors);
 
   return (
     <div className="grid gap-6 p-4">

@@ -10,10 +10,13 @@ const axios = Axios.create({
 
 axios.interceptors.request.use(
   async (config) => {
-    const token = localStorage.getItem("token");
+    const user = localStorage.getItem("user");
+    const token = user ? JSON.parse(user)?.token : null;
+
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }
+    
     return config;
   },
   (error) => Promise.reject(error)

@@ -4,8 +4,8 @@ import AuthRoute from "./components/AuthRoute";
 import IndexRoute from "./components/IndexRoute";
 import RootLayout from "./components/RootLayout";
 import { ROLES } from "./constants";
+import AdminTutors from "./pages/admin/adminTutors/AdminTutors";
 import Dashboard from "./pages/admin/Dashboard";
-import EditPost from "./pages/auth/EditPost";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import Login from "./pages/auth/Login";
 import ResetPassword from "./pages/auth/ResetPassword";
@@ -14,10 +14,8 @@ import VerifyEmail from "./pages/auth/VerifyEmail";
 import AboutUs from "./pages/info/AboutUs";
 import ContactUs from "./pages/info/ContactUs";
 import PageNotFound from "./pages/info/PageNotFound";
-import CreatePost from "./pages/posts/CreatePost";
 import Posts from "./pages/posts/Posts";
 import Tutors from "./pages/tutors/Tutors";
-import AdminTutors from "./pages/admin/adminTutors/AdminTutors";
 
 export default function App() {
   return (
@@ -38,8 +36,6 @@ export default function App() {
           <Route element={<AuthRoute role={ROLES.USER} />}>
             <Route path="posts">
               <Route index element={<Posts />} />
-              <Route path="create" element={<CreatePost />} />
-              <Route path="edit" element={<EditPost />} />
             </Route>
           </Route>
 

@@ -25,7 +25,7 @@ export default function HeroSection() {
       </div>
       <img
         className="object-contain col-span-2"
-        src="./hero.png"
+        src="./hero.jpg"
         alt="Hero Image"
       />
     </section>

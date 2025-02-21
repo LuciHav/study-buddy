@@ -45,6 +45,7 @@ export default function CreateTutor() {
   });
 
   const addSubject = (e) => {
+    e.preventDefault();
     if (e.key === "Enter" && e.target.value) {
       const newSubjects = [...subjects, e.target.value];
       setSubjects(newSubjects);

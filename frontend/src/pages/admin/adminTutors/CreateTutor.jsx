@@ -45,7 +45,6 @@ export default function CreateTutor() {
   });
 
   const addSubject = (e) => {
-    e.preventDefault();
     if (e.key === "Enter" && e.target.value) {
       const newSubjects = [...subjects, e.target.value];
       setSubjects(newSubjects);
@@ -82,6 +81,12 @@ export default function CreateTutor() {
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+    }
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -97,6 +102,7 @@ export default function CreateTutor() {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
+            onKeyDown={handleKeyDown}
             className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6"
           >
             <FormField

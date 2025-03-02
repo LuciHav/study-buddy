@@ -26,3 +26,9 @@ export const SUBJECTS = {
   PHILOSOPHY: "Philosophy",
   OTHER: "Other",
 };
+
+export const REPORT_STATUS = {
+  PENDING: "pending",
+  REVIEWED: "reviewed",
+  RESOLVED: "resolved",
+};

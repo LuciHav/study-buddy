@@ -17,6 +17,8 @@ import PageNotFound from "./pages/info/PageNotFound";
 import Posts from "./pages/posts/Posts";
 import Tutors from "./pages/tutors/Tutors";
 import Post from "./pages/posts/Post";
+import Reports from "./pages/admin/reports/Reports";
+import AdminPosts from "./pages/admin/adminPosts/AdminPosts";
 
 export default function App() {
   return (
@@ -49,6 +51,8 @@ export default function App() {
             <Route path="admin">
               <Route index element={<Dashboard />} />
               <Route path="tutors" element={<AdminTutors />} />
+              <Route path="reports" element={<Reports />} />
+              <Route path="posts" element={<AdminPosts />} />
             </Route>
           </Route>
         </Route>

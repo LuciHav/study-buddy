@@ -1,11 +1,12 @@
 import {
-  Calendar,
   ChevronUp,
-  Home,
   GraduationCap,
+  Home,
+  MessageSquareWarning,
+  Newspaper,
   Search,
   Settings,
-  User2,
+  User2
 } from "lucide-react";
 
 import {
@@ -20,15 +21,15 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import useAuth from "@/contexts/AuthProvider";
+import { NavLink, useNavigate } from "react-router";
+import Logo from "./Logo";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import Logo from "./Logo";
-import { NavLink, useNavigate } from "react-router";
-import useAuth from "@/contexts/AuthProvider";
 
 // Menu items.
 const items = [
@@ -43,9 +44,14 @@ const items = [
     icon: GraduationCap,
   },
   {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
+    title: "Posts",
+    url: "/admin/posts",
+    icon: Newspaper,
+  },
+  {
+    title: "Report",
+    url: "/admin/reports",
+    icon: MessageSquareWarning,
   },
   {
     title: "Search",

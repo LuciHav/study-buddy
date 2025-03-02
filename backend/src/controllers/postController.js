@@ -1,5 +1,6 @@
 import Post from "../models/Post.js";
 import User from "../models/User.js";
+import { deleteFile } from "../utils/helpers.js";
 import HttpError from "../utils/HttpError.js";
 
 export const createPost = async (req, res) => {
@@ -82,6 +83,7 @@ export const deletePost = async (req, res) => {
   }
 
   await post.destroy();
+  post.image && (await deleteFile(post.image));
 
   res.status(200).json({
     success: true,

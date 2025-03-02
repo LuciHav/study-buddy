@@ -1,13 +1,13 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
-    Table,
-    TableBody,
-    TableCaption,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
+import UserAvatar from "@/components/UserAvatar";
 import { getRequest } from "@/utils/apiHelpers";
 import { useEffect, useState } from "react";
 
@@ -36,24 +36,21 @@ export default function ListTutors() {
     <Table>
       <TableCaption>A list of all the tutors</TableCaption>
       <TableHeader>
-        <TableHead>Tutor ID</TableHead>
-        <TableHead>Image</TableHead>
-        <TableHead>Name</TableHead>
-        <TableHead>Email</TableHead>
-        <TableHead>Phone</TableHead>
-        <TableHead>Address</TableHead>
+        <TableRow>
+          <TableHead>Tutor ID</TableHead>
+          <TableHead>Image</TableHead>
+          <TableHead>Name</TableHead>
+          <TableHead>Email</TableHead>
+          <TableHead>Phone</TableHead>
+          <TableHead>Address</TableHead>
+        </TableRow>
       </TableHeader>
       <TableBody>
         {tutors.map((tutor) => (
           <TableRow key={tutor.id}>
             <TableCell>{tutor.id}</TableCell>
             <TableCell>
-              <Avatar>
-                <AvatarImage
-                  src={`${import.meta.env.VITE_SERVER_URL}/${tutor.image}`}
-                />
-                <AvatarFallback>{tutor.firstName.charAt(0)}</AvatarFallback>
-              </Avatar>
+              <UserAvatar user={tutor} />
             </TableCell>
             <TableCell>{tutor.firstName + " " + tutor.lastName}</TableCell>
             <TableCell>{tutor.email}</TableCell>

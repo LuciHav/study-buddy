@@ -1,19 +1,20 @@
-import { useEffect, useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardFooter,
-} from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Heart, MessageCircle, Share } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
-import { useParams } from "react-router";
 import { CommentForm } from "@/components/CommentForm";
 import { CommentItem } from "@/components/CommentItem";
 import Loader from "@/components/Loader";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import UserAvatar from "@/components/UserAvatar";
 import { getRequest, postRequest } from "@/utils/apiHelpers";
+import { formatDistanceToNow } from "date-fns";
+import { Heart, MessageCircle, Share } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router";
+import ReportOptions from "./ReportOptions";
 
 export default function Post() {
   const { postId } = useParams();
@@ -60,7 +61,7 @@ export default function Post() {
       url: `/api/v1/posts/${postId}/comments`,
       data: { comment, parentId },
     });
-  
+
     if (resData.success) {
       const updatedComments = (comments) => {
         const addReplyRecursive = (commentList) => {
@@ -71,40 +72,39 @@ export default function Post() {
             return { ...c, replies: addReplyRecursive(c.replies) };
           });
         };
-  
+
         return addReplyRecursive(comments);
       };
-  
+
       setComments(updatedComments);
     } else {
       console.error(resData.message);
     }
   };
-  
 
   if (isLoading) return <Loader />;
 
   return (
     <div className="container max-w-4xl mx-auto py-8 px-4">
       <Card className="mb-8">
-        <CardHeader className="flex flex-row items-center gap-4">
-          <Avatar>
-            <AvatarImage src={post.User?.image} />
-            <AvatarFallback>{`${post.User.firstName.charAt(
-              0
-            )}${post.User.lastName.charAt(0)}`}</AvatarFallback>
-          </Avatar>
-          <div>
-            <p className="font-semibold">{`${post.User.firstName} ${post.User.lastName}`}</p>
-            <div className="flex items-center gap-2">
-              <p className="text-sm text-muted-foreground">{post.subject}</p>
-              <span className="text-sm text-muted-foreground">•</span>
-              <p className="text-sm text-muted-foreground">
-                {formatDistanceToNow(new Date(post.createdAt), {
-                  addSuffix: true,
-                })}
-              </p>
+        <CardHeader className="flex flex-row justify-between items-center gap-4">
+          <div className="flex flex-row items-center gap-4">
+            <UserAvatar user={post.User} />
+            <div>
+              <p className="font-semibold">{`${post.User.firstName} ${post.User.lastName}`}</p>
+              <div className="flex items-center gap-2">
+                <p className="text-sm text-muted-foreground">{post.subject}</p>
+                <span className="text-sm text-muted-foreground">•</span>
+                <p className="text-sm text-muted-foreground">
+                  {formatDistanceToNow(new Date(post.createdAt), {
+                    addSuffix: true,
+                  })}
+                </p>
+              </div>
             </div>
+          </div>
+          <div>
+            <ReportOptions postId={postId}/>
           </div>
         </CardHeader>
 

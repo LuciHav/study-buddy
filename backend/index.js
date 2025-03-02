@@ -15,6 +15,7 @@ import adminRoute from "./src/routes/adminRoute.js";
 import tutorRoute from "./src/routes/tutorRoute.js";
 import postRoute from "./src/routes/postRoute.js";
 import commentRoute from "./src/routes/commentRoute.js";
+import reportRoute from "./src/routes/reportRoute.js";
 
 import "./src/models/index.js";
 
@@ -26,7 +27,7 @@ app.use(cors());
 app.use("/public", express.static(path.join(path.resolve(), "public")));
 
 await sequelize
-  .sync()
+  .sync({alter:true})
   .then(() => console.log("✅ Database connected and synchronized."))
   .catch((err) => console.error("❌ Database synchronization failed:", err));
 
@@ -37,6 +38,7 @@ app.use("/api/v1/admin", adminRoute);
 app.use("/api/v1/tutors", tutorRoute);
 app.use("/api/v1/posts", postRoute);
 app.use("/api/v1/posts/:postId/comments", commentRoute);
+app.use("/api/v1/reports", reportRoute);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

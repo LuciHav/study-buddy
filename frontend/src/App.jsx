@@ -16,6 +16,7 @@ import ContactUs from "./pages/info/ContactUs";
 import PageNotFound from "./pages/info/PageNotFound";
 import Posts from "./pages/posts/Posts";
 import Tutors from "./pages/tutors/Tutors";
+import Post from "./pages/posts/Post";
 
 export default function App() {
   return (
@@ -32,10 +33,11 @@ export default function App() {
           <Route path="reset-password" element={<ResetPassword />} />
 
           <Route path="tutors" element={<Tutors />} />
-          
+
           <Route element={<AuthRoute role={ROLES.USER} />}>
             <Route path="posts">
               <Route index element={<Posts />} />
+              <Route path=":postId" element={<Post />} />
             </Route>
           </Route>
 

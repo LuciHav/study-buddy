@@ -1,9 +1,9 @@
 import useAuth from "@/contexts/AuthProvider";
+import { useNavigate } from "react-router";
 import { ModeToggle } from "./ModeTogge";
 import NavButton from "./NavButton";
 import { Input } from "./ui/input";
-import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
-import { useNavigate } from "react-router";
+import UserAvatar from "./UserAvatar";
 
 export default function UserActions() {
   const { currentUser, clearUser } = useAuth();
@@ -11,7 +11,7 @@ export default function UserActions() {
 
   function handleSignout() {
     clearUser();
-    navigate("/")
+    navigate("/");
   }
 
   return (
@@ -19,12 +19,7 @@ export default function UserActions() {
       <Input type="search" placeholder="Search..." className="w-48" />
       {currentUser ? (
         <>
-          <Avatar>
-            <AvatarImage src={currentUser?.image} />
-            <AvatarFallback>{`${currentUser.firstName.charAt(
-              0
-            )}${currentUser.lastName.charAt(0)}`}</AvatarFallback>
-          </Avatar>
+          <UserAvatar user={currentUser} />
           <NavButton to="/login" onClick={handleSignout}>
             Log Out
           </NavButton>

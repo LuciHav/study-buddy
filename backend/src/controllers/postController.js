@@ -33,7 +33,9 @@ export const getAllPosts = async (req, res) => {
 export const getPostById = async (req, res) => {
   const { id } = req.params;
 
-  const post = await Post.findByPk(id);
+  const post = await Post.findByPk(id, {
+    include: [{ model: User, attributes: ["firstName", "lastName", "image"] }],
+  });
 
   if (!post) {
     throw new HttpError(404, "Post not found");

@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { formatDistanceToNow } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Heart, MessageCircle } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { MessageCircle } from "lucide-react";
+import { useState } from "react";
 import { CommentForm } from "./CommentForm";
 import UserAvatar from "./UserAvatar";
 
@@ -32,10 +32,6 @@ export function CommentItem({ comment, onAddReply }) {
               </div>
               <p>{comment.comment}</p>
               <div className="flex items-center gap-4 mt-2">
-                <Button variant="ghost" size="sm" className="h-auto p-0">
-                  <Heart className="w-3 h-3 mr-1" />
-                  <span className="text-xs">0</span>
-                </Button>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -84,12 +80,6 @@ export function CommentItem({ comment, onAddReply }) {
                       </span>
                     </div>
                     <p>{reply.comment}</p>
-                    <div className="flex items-center gap-4 mt-2">
-                      <Button variant="ghost" size="sm" className="h-auto p-0">
-                        <Heart className="w-3 h-3 mr-1" />
-                        <span className="text-xs">0</span>
-                      </Button>
-                    </div>
                   </div>
                 </div>
               </CardContent>

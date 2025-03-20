@@ -1,6 +1,5 @@
 import Loader from "@/components/Loader";
 import { Button } from "@/components/ui/button";
-import useAuth from "@/contexts/AuthProvider";
 import { getRequest } from "@/utils/apiHelpers";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -11,8 +10,6 @@ export default function PostsPage() {
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [open, setOpen] = useState(false);
-
-  const { currentUser } = useAuth();
 
   useEffect(() => {
     fetchPosts();
@@ -28,21 +25,12 @@ export default function PostsPage() {
     setIsLoading(false);
   };
 
-  const onPostCreated = (newPost) => {
-    const postWithUserDetails = {
-      ...newPost,
-      User: {
-        firstName: currentUser.firstName,
-        lastName: currentUser.lastName,
-        image: currentUser.image,
-      },
-    };
-
-    setPosts((prevPosts) => [postWithUserDetails, ...prevPosts]);
+  const onPostCreated = () => {
+    fetchPosts();
     setOpen(false);
   };
 
-  if (isLoading) <Loader />;
+  if (isLoading) return <Loader />;
 
   return (
     <div className="container mx-auto py-6">

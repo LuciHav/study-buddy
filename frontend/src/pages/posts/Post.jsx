@@ -1,7 +1,5 @@
 import { CommentForm } from "@/components/CommentForm";
 import { CommentItem } from "@/components/CommentItem";
-import Loader from "@/components/Loader";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -11,10 +9,11 @@ import {
 import UserAvatar from "@/components/UserAvatar";
 import { getRequest, postRequest } from "@/utils/apiHelpers";
 import { formatDistanceToNow } from "date-fns";
-import { Heart, MessageCircle, Share } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
+import PostActions from "./PostActions";
 import ReportOptions from "./ReportOptions";
+import Loader from "@/components/Loader";
 
 export default function Post() {
   const { postId } = useParams();
@@ -104,7 +103,7 @@ export default function Post() {
             </div>
           </div>
           <div>
-            <ReportOptions postId={postId}/>
+            <ReportOptions postId={postId} />
           </div>
         </CardHeader>
 
@@ -124,28 +123,7 @@ export default function Post() {
         </CardContent>
 
         <CardFooter className="flex justify-between items-center p-4 border-t">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex items-center gap-2"
-            >
-              <Heart className="w-4 h-4" />
-              <span>123 Likes</span>
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex items-center gap-2"
-            >
-              <MessageCircle className="w-4 h-4" />
-              <span>{comments.length} Comments</span>
-            </Button>
-          </div>
-          <Button variant="ghost" size="sm">
-            <Share className="w-4 h-4 mr-2" />
-            Share
-          </Button>
+          <PostActions post={post} />
         </CardFooter>
       </Card>
 

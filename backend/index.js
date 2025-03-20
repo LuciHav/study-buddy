@@ -16,6 +16,7 @@ import tutorRoute from "./src/routes/tutorRoute.js";
 import postRoute from "./src/routes/postRoute.js";
 import commentRoute from "./src/routes/commentRoute.js";
 import reportRoute from "./src/routes/reportRoute.js";
+import reactionRoute from "./src/routes/reactionRoute.js";
 
 import "./src/models/index.js";
 
@@ -38,6 +39,7 @@ app.use("/api/v1/admin", adminRoute);
 app.use("/api/v1/tutors", tutorRoute);
 app.use("/api/v1/posts", postRoute);
 app.use("/api/v1/posts/:postId/comments", commentRoute);
+app.use("/api/v1/posts/:postId/reactions", reactionRoute);
 app.use("/api/v1/reports", reportRoute);
 
 app.use(notFoundHandler);

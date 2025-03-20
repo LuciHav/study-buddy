@@ -1,18 +1,15 @@
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Card,
   CardContent,
-  CardHeader,
   CardFooter,
+  CardHeader,
 } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Heart, MessageCircle, Share } from "lucide-react";
 import { useNavigate } from "react-router";
+import PostActions from "./PostActions";
 
 export function PostCard({ post }) {
   const navigate = useNavigate();
-  const totalLikes = 123;
-  const totalComments = 45;
 
   const handleCardClick = () => {
     navigate(`/posts/${post.id}`);
@@ -46,28 +43,12 @@ export function PostCard({ post }) {
           <h3 className="font-semibold">{post.title}</h3>
           <p className="mt-2 text-muted-foreground">{post.description}</p>
         </CardContent>
+
         <CardFooter
           className="flex justify-between items-center p-4 border-t"
           onClick={(e) => e.stopPropagation()} // Prevents navigation when clicking the footer
         >
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Heart className="w-4 h-4" />
-              <span className="text-sm text-muted-foreground">
-                {totalLikes}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <MessageCircle className="w-4 h-4" />
-              <span className="text-sm text-muted-foreground">
-                {totalComments}
-              </span>
-            </div>
-          </div>
-          <Button variant="ghost" size="sm">
-            <Share className="w-4 h-4 mr-2" />
-            Share
-          </Button>
+          <PostActions post={post} />
         </CardFooter>
       </Card>
     </div>

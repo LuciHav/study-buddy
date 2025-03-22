@@ -6,7 +6,7 @@ import HttpError from "../utils/HttpError.js";
 export const createComment = async (req, res, _next) => {
   const { postId } = req.params;
   const { parentId, comment } = req.body;
-  const { user } = req;
+  const { user, file } = req;
 
   const post = await Post.findByPk(postId);
   if (!post) throw new HttpError(404, `Post with id #${postId} not found.`);
@@ -18,6 +18,7 @@ export const createComment = async (req, res, _next) => {
 
   const newComment = await Comment.create({
     comment,
+    image: file ? file.path : null,
     postId,
     userId: user.id,
     parentId: parentId || null,
@@ -29,6 +30,7 @@ export const createComment = async (req, res, _next) => {
     comment: {
       id: newComment.id,
       comment,
+      image: file ? file.path : null,
       parentId: parentId || null,
       createdAt: newComment.createdAt,
       user: {

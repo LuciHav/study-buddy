@@ -7,7 +7,11 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import UserAvatar from "@/components/UserAvatar";
-import { getRequest, postRequest } from "@/utils/apiHelpers";
+import {
+  getRequest,
+  postFormDataRequest,
+  postRequest,
+} from "@/utils/apiHelpers";
 import { formatDistanceToNow } from "date-fns";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
@@ -43,10 +47,10 @@ export default function Post() {
     if (postId) fetchPostData();
   }, [postId]);
 
-  const handleAddComment = async (comment) => {
-    const resData = await postRequest({
+  const handleAddComment = async (formData) => {
+    const resData = await postFormDataRequest({
       url: `/api/v1/posts/${postId}/comments`,
-      data: { comment },
+      data: formData,
     });
     if (resData.success) {
       setComments([...comments, resData.comment]);

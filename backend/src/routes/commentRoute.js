@@ -9,10 +9,11 @@ import {
 import { authenticate } from "../middlewares/authMiddleware.js";
 import validate from "../middlewares/validatorMiddleware.js";
 import { commentSchema } from "../schemas/commentSchema.js";
+import upload from "../middlewares/multerMiddleware.js";
 
 const router = express.Router({mergeParams: true});
 
-router.post("/", authenticate, validate(commentSchema), createComment);
+router.post("/", authenticate, upload.single("image"), validate(commentSchema), createComment);
 router.get("/", authenticate, getAllComment);
 router.get("/:id", authenticate, getCommentById);
 router.put("/:id", authenticate, validate(commentSchema), updateComment);

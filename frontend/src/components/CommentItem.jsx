@@ -31,6 +31,13 @@ export function CommentItem({ comment, onAddReply }) {
                 </span>
               </div>
               <p>{comment.comment}</p>
+              {comment.image && (
+                <img
+                  src={`${import.meta.env.VITE_SERVER_URL}/${comment.image}`}
+                  alt="Comment Attachment"
+                  className="mt-2 max-w-xs rounded-lg"
+                />
+              )}
               <div className="flex items-center gap-4 mt-2">
                 <Button
                   variant="ghost"
@@ -80,6 +87,15 @@ export function CommentItem({ comment, onAddReply }) {
                       </span>
                     </div>
                     <p>{reply.comment}</p>
+                    {comment.image && (
+                      <img
+                        src={`${import.meta.env.VITE_SERVER_URL}/${
+                          comment.image
+                        }`}
+                        alt="Comment Attachment"
+                        className="mt-2 max-w-xs rounded-lg"
+                      />
+                    )}
                   </div>
                 </div>
               </CardContent>

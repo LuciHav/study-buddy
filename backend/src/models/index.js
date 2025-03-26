@@ -3,6 +3,8 @@ import Post from "./Post.js";
 import Comment from "./Comment.js";
 import Report from "./Report.js";
 import Reaction from "./Reaction.js";
+import Booking from "./Booking.js";
+import Tutor from "./Tutor.js";
 
 User.hasMany(Post, { foreignKey: "userId" });
 Post.belongsTo(User, { foreignKey: "userId" });
@@ -24,3 +26,6 @@ Reaction.belongsTo(User, { foreignKey: "userId", as: "user" });
 
 Post.hasMany(Reaction, { foreignKey: "postId", as: "reactions" });
 Reaction.belongsTo(Post, { foreignKey: "postId", as: "post" });
+
+Booking.belongsTo(User, { foreignKey: "userId", as: "user" });
+Booking.belongsTo(Tutor, { foreignKey: "tutorId", as: "tutor" });

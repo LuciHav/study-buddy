@@ -53,6 +53,9 @@ export default function CreateTutor() {
     }
   };
 
+  console.log(form.formState.errors);
+  
+
   const onSubmit = async (values) => {
     const formData = new FormData();
     for (const key in values) {

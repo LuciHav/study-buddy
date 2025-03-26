@@ -15,6 +15,10 @@ export default function Navbar() {
       href: "/tutors",
     },
     {
+      name: "Bookings",
+      href: "/bookings",
+    },
+    {
       name: "About",
       href: "/about-us",
     },

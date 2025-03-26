@@ -1,35 +1,37 @@
+import BookingCard from "@/components/BookingCard";
 import Loader from "@/components/Loader";
-import TutorCard from "@/components/TutorCard";
 import { getRequest } from "@/utils/apiHelpers";
 import { useEffect, useState } from "react";
 
-export default function Tutors() {
-  const [tutors, setTutors] = useState([]);
+export default function Bookings() {
+  const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
   useEffect(() => {
     (async () => {
-      const resData = await getRequest({ url: "/api/v1/tutors" });
+      const resData = await getRequest({ url: "/api/v1/bookings" });
       if (resData.success) {
-        setTutors(resData.tutors);
+        setBookings(resData.bookings);
       } else {
         console.log("Error:", resData.message);
         setError(true);
       }
       setLoading(false);
     })();
-  }, []);  
+  }, []);
 
-  if (loading) return <Loader/>;
+  if (loading) return <Loader />;
   if (error) return <p>An Error Occured</p>;
 
   return (
     <div className="grid gap-6 p-4">
-      {tutors.length === 0 ? (
-        <p className="text-center">No tutors added yet</p>
+      {bookings.length === 0 ? (
+        <p className="text-center">You don&apos;t have any bookings yet</p>
       ) : (
-        tutors.map((tutor) => <TutorCard key={tutor.id} tutor={tutor} />)
+        bookings.map((booking) => (
+          <BookingCard key={booking.id} booking={booking} />
+        ))
       )}
     </div>
   );

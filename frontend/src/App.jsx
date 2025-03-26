@@ -19,6 +19,9 @@ import Tutors from "./pages/tutors/Tutors";
 import Post from "./pages/posts/Post";
 import Reports from "./pages/admin/reports/Reports";
 import AdminPosts from "./pages/admin/adminPosts/AdminPosts";
+import BookTutor from "./pages/tutors/BookTutor";
+import BookingSuccess from "./pages/tutors/BookingSuccess";
+import Bookings from "./pages/tutors/Bookings";
 
 export default function App() {
   return (
@@ -37,6 +40,9 @@ export default function App() {
           <Route path="tutors" element={<Tutors />} />
 
           <Route element={<AuthRoute role={ROLES.USER} />}>
+            <Route path="tutors/:id" element={<BookTutor />} />
+            <Route path="bookings" element={<Bookings />} />
+            <Route path="booking/success" element={<BookingSuccess />} />
             <Route path="posts">
               <Route index element={<Posts />} />
               <Route path=":postId" element={<Post />} />

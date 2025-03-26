@@ -3,13 +3,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import NavButton from "./NavButton";
 
 export default function TutorCard({ tutor }) {
   return (
     <Card className="w-full m-auto max-w-3xl">
       <CardHeader className="flex flex-row items-center gap-4">
         <Avatar className="h-20 w-20">
-          <AvatarImage className="object-cover"
+          <AvatarImage
+            className="object-cover"
             src={`${import.meta.env.VITE_SERVER_URL}/${tutor.image}`}
             alt={`${tutor.firstName} ${tutor.lastName}`}
           />
@@ -72,6 +74,7 @@ export default function TutorCard({ tutor }) {
         <div className="flex items-center justify-between">
           <div className="text-lg font-semibold">Hourly Rate</div>
           <div className="text-2xl font-bold">Rs {tutor.hourlyRate}/hr</div>
+          <NavButton to={`${tutor.id}`}>Booking</NavButton>
         </div>
       </CardContent>
     </Card>

@@ -29,4 +29,11 @@ export default {
     secret: process.env.JWT_SECRET_KEY,
     expiresIn: process.env.JWT_EXPIRES_IN,
   },
+  stripe: {
+    publicKey: process.env.STRIPE_PUBLIC_KEY,
+    secretKey: process.env.STRIPE_SECRET_KEY,
+    webhookKey: process.env.STRIPE_WEBHOOK_KEY,
+    successUrl: process.env.PAYMENT_SUCCESS_URL,
+    cancelUrl: process.env.PAYMENT_CANCEL_URL,
+  },
 };

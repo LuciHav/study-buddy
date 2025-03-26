@@ -32,3 +32,9 @@ export const REPORT_STATUS = {
   REVIEWED: "reviewed",
   RESOLVED: "resolved",
 };
+
+export const BOOKING_STATUS = {
+  PENDING: "pending",
+  CONFIRMED: "confirmed",
+  CANCELLED: "cancelled",
+};  

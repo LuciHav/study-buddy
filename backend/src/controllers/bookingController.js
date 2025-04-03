@@ -1,5 +1,5 @@
+import { ROLES } from "../constants/index.js";
 import Booking from "../models/Booking.js";
-import Tutor from "../models/Tutor.js";
 import User from "../models/User.js";
 import HttpError from "../utils/HttpError.js";
 
@@ -8,9 +8,9 @@ export const getAllBooking = async (req, res, next) => {
 
   let whereClause = {};
 
-  if (role === "user") {
+  if (role === ROLES.USER) {
     whereClause.userId = id;
-  } else if (role === "tutor") {
+  } else if (role === ROLES.TUTOR) {
     whereClause.tutorId = id;
   }
   // If admin, keep whereClause empty to fetch all
@@ -19,7 +19,7 @@ export const getAllBooking = async (req, res, next) => {
     where: whereClause,
     include: [
       {
-        model: Tutor,
+        model: User,
         as: "tutor",
         attributes: ["id", "firstName", "lastName", "image"],
       },
@@ -45,7 +45,7 @@ export const getBookingById = async (req, res, next) => {
   const booking = await Booking.findByPk(bookingId, {
     include: [
       {
-        model: Tutor,
+        model: User,
         as: "tutor",
         attributes: ["id", "firstName", "lastName", "image"],
       },

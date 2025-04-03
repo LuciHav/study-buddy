@@ -9,6 +9,9 @@ import Tutor from "./Tutor.js";
 User.hasMany(Post, { foreignKey: "userId" });
 Post.belongsTo(User, { foreignKey: "userId" });
 
+User.hasOne(Tutor, {foreignKey: "userId", as: "tutorProfile", onDelete: "CASCADE"});
+Tutor.belongsTo(User, {foreignKey: "userId", as: "user"});
+
 Comment.belongsTo(User, { foreignKey: "userId", as: "user" });
 Comment.belongsTo(Post, { foreignKey: "postId", as: "post", onDelete: "CASCADE" });
 Post.hasMany(Comment, { foreignKey: "postId", as: "comments", onDelete: "CASCADE" });
@@ -28,4 +31,4 @@ Post.hasMany(Reaction, { foreignKey: "postId", as: "reactions" });
 Reaction.belongsTo(Post, { foreignKey: "postId", as: "post" });
 
 Booking.belongsTo(User, { foreignKey: "userId", as: "user" });
-Booking.belongsTo(Tutor, { foreignKey: "tutorId", as: "tutor" });
+Booking.belongsTo(User, { foreignKey: "tutorId", as: "tutor" });

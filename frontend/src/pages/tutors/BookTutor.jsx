@@ -55,7 +55,7 @@ export default function BookTutor() {
     setIsSubmitting(true);
 
     const bookingData = {
-      tutorId: id,
+      tutorId: tutor.userId,
       hours: data.hours,
     };
 

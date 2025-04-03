@@ -1,28 +1,18 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../configs/database.js";
+import User from "./User.js";
 
 const Tutor = sequelize.define(
   "Tutor",
   {
-    firstName: {
-      type: DataTypes.STRING,
+    userId: {
+      type: DataTypes.INTEGER,
       allowNull: false,
-    },
-    lastName: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-      validate: {
-        isEmail: true,
+      references: {
+        model: User,
+        key: "id",
       },
-    },
-    image: {
-      type: DataTypes.STRING,
-      allowNull: true,
+      onDelete: "CASCADE",
     },
     bio: {
       type: DataTypes.TEXT,

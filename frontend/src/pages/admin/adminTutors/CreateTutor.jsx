@@ -34,6 +34,7 @@ export default function CreateTutor() {
       firstName: "",
       lastName: "",
       email: "",
+      password: "",
       bio: "",
       phone: "",
       address: "",
@@ -54,7 +55,6 @@ export default function CreateTutor() {
   };
 
   console.log(form.formState.errors);
-  
 
   const onSubmit = async (values) => {
     const formData = new FormData();
@@ -139,6 +139,22 @@ export default function CreateTutor() {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <Input type="email" {...field} autoComplete="email" />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              name="password"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <Input
+                    type="password"
+                    {...field}
+                    autoComplete="new-password"
+                  />
                   <FormMessage />
                 </FormItem>
               )}

@@ -33,11 +33,9 @@ export default function Login() {
     const resData = await postRequest({ url: "/api/v1/auth/login", data });
     if (resData.success) {
       setCurrentUser(resData.user);
-      if (resData.user.role === ROLES.ADMIN) {
-        navigate("/admin");
-      } else {
-        navigate("/");
-      }
+      if (resData.user.role === ROLES.ADMIN) navigate("/admin");
+      else if (resData.user.role === ROLES.TUTOR) navigate("/tutor");
+      else navigate("/");
     } else {
       console.log("Error:", resData.message);
     }

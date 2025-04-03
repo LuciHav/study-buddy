@@ -3,9 +3,12 @@ import AdminLayout from "./components/AdminLayout";
 import AuthRoute from "./components/AuthRoute";
 import IndexRoute from "./components/IndexRoute";
 import RootLayout from "./components/RootLayout";
+import TutorLayout from "./components/TutorLayout";
 import { ROLES } from "./constants";
+import AdminDashboard from "./pages/admin/Dashboard";
+import AdminPosts from "./pages/admin/adminPosts/AdminPosts";
 import AdminTutors from "./pages/admin/adminTutors/AdminTutors";
-import Dashboard from "./pages/admin/Dashboard";
+import Reports from "./pages/admin/reports/Reports";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import Login from "./pages/auth/Login";
 import ResetPassword from "./pages/auth/ResetPassword";
@@ -14,14 +17,14 @@ import VerifyEmail from "./pages/auth/VerifyEmail";
 import AboutUs from "./pages/info/AboutUs";
 import ContactUs from "./pages/info/ContactUs";
 import PageNotFound from "./pages/info/PageNotFound";
-import Posts from "./pages/posts/Posts";
-import Tutors from "./pages/tutors/Tutors";
 import Post from "./pages/posts/Post";
-import Reports from "./pages/admin/reports/Reports";
-import AdminPosts from "./pages/admin/adminPosts/AdminPosts";
+import Posts from "./pages/posts/Posts";
+import TutorDashboard from "./pages/tutor/Dashboard";
 import BookTutor from "./pages/tutors/BookTutor";
 import BookingSuccess from "./pages/tutors/BookingSuccess";
 import Bookings from "./pages/tutors/Bookings";
+import Tutors from "./pages/tutors/Tutors";
+import ListBookings from "./pages/tutor/ListBookings";
 
 export default function App() {
   return (
@@ -52,13 +55,24 @@ export default function App() {
           <Route path="*" element={<PageNotFound />} />
         </Route>
 
+        <Route element={<AuthRoute role={ROLES.TUTOR} />}>
+          <Route element={<TutorLayout />}>
+            <Route path="tutor">
+              <Route index element={<TutorDashboard />} />
+              <Route path="bookings" element={<ListBookings />} />
+              <Route path="*" element={<PageNotFound />} />
+            </Route>
+          </Route>
+        </Route>
+
         <Route element={<AuthRoute role={ROLES.ADMIN} />}>
           <Route element={<AdminLayout />}>
             <Route path="admin">
-              <Route index element={<Dashboard />} />
+              <Route index element={<AdminDashboard />} />
               <Route path="tutors" element={<AdminTutors />} />
               <Route path="reports" element={<Reports />} />
               <Route path="posts" element={<AdminPosts />} />
+              <Route path="*" element={<PageNotFound />} />
             </Route>
           </Route>
         </Route>

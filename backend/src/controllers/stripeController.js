@@ -1,17 +1,26 @@
+import keys from "../configs/keys.js";
+import { BOOKING_STATUS } from "../constants/index.js";
 import Booking from "../models/Booking.js";
 import Tutor from "../models/Tutor.js";
-import { BOOKING_STATUS } from "../constants/index.js";
+import User from "../models/User.js";
 import stripe from "../services/stripe.js";
 import HttpError from "../utils/HttpError.js";
-import keys from "../configs/keys.js";
 
 export const createCheckoutSession = async (req, res, next) => {
   const { tutorId, hours } = req.body;
   const userId = req.user.id;
 
-  const tutor = await Tutor.findByPk(tutorId);
-  if (!tutor) throw new HttpError(404, `Tutor with id ${tutorId} not found`);
+  const tutor = await User.findByPk(tutorId, {
+    include: {
+      model: Tutor,
+      as: "tutorProfile",
+    },
+  }); 
 
+  if (!tutor || !tutor.tutorProfile) {
+    throw new HttpError(404, `Tutor with id ${tutorId} not found`);
+  }
+  
   const customer = await stripe.customers.create({
     email: req.user.email,
     name: req.user.firstName + " " + req.user.lastName,
@@ -26,10 +35,10 @@ export const createCheckoutSession = async (req, res, next) => {
       {
         price_data: {
           currency: "npr",
-          unit_amount: Math.round(tutor.hourlyRate * 100),
+          unit_amount: Math.round(tutor.tutorProfile.hourlyRate * 100),
           product_data: {
             name: tutor.firstName + " " + tutor.lastName,
-            description: tutor.bio,
+            description: tutor.tutorProfile.bio,
           },
         },
         quantity: hours,

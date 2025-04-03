@@ -1,7 +1,7 @@
 import express from "express";
 import {
   getAllTutors,
-  getTutorById,
+  getTutorByUserId,
   createTutor,
   updateTutor,
   deleteTutor,
@@ -14,7 +14,7 @@ const router = express.Router();
 
 router.post("/", upload.single("image"), validate(tutorSchema), createTutor);
 router.get("/", getAllTutors);
-router.get("/:id", getTutorById);
+router.get("/:id", getTutorByUserId);
 router.put("/:id", upload.single("image"), validate(tutorSchema), updateTutor);
 router.delete("/:id", deleteTutor);
 

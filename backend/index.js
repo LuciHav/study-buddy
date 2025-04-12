@@ -9,6 +9,7 @@ import {
   notFoundHandler,
   errorHandler,
 } from "./src/middlewares/errorHandlerMiddleware.js";
+import { app, server} from "./src/configs/socket.js"
 
 import authRoute from "./src/routes/authRoute.js";
 import adminRoute from "./src/routes/adminRoute.js";
@@ -19,10 +20,9 @@ import reportRoute from "./src/routes/reportRoute.js";
 import reactionRoute from "./src/routes/reactionRoute.js";
 import bookingRoute from "./src/routes/bookingRoute.js";
 import webhookRoute from "./src/routes/webhookRoute.js";
+import messageRoute from "./src/routes/messageRoute.js";
 
 import "./src/models/index.js";
-
-const app = express();
 
 app.use("/api/v1/webhook", webhookRoute);
 
@@ -46,10 +46,11 @@ app.use("/api/v1/posts/:postId/comments", commentRoute);
 app.use("/api/v1/posts/:postId/reactions", reactionRoute);
 app.use("/api/v1/reports", reportRoute);
 app.use("/api/v1/bookings", bookingRoute);
+app.use("/api/v1/messages", messageRoute);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
 
-app.listen(keys.server.port, () => {
+server.listen(keys.server.port, () => {
   console.log(`✅ Server is up and running on port ${keys.server.port}.`);
 });

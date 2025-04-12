@@ -25,6 +25,7 @@ import BookingSuccess from "./pages/tutors/BookingSuccess";
 import Bookings from "./pages/tutors/Bookings";
 import Tutors from "./pages/tutors/Tutors";
 import ListBookings from "./pages/tutor/ListBookings";
+import Conversation from "./pages/conversation/Conversation";
 
 export default function App() {
   return (
@@ -45,6 +46,7 @@ export default function App() {
           <Route element={<AuthRoute role={ROLES.USER} />}>
             <Route path="tutors/:id" element={<BookTutor />} />
             <Route path="bookings" element={<Bookings />} />
+            <Route path="bookings/:id/chat" element={<Conversation />} />
             <Route path="booking/success" element={<BookingSuccess />} />
             <Route path="posts">
               <Route index element={<Posts />} />
@@ -60,6 +62,7 @@ export default function App() {
             <Route path="tutor">
               <Route index element={<TutorDashboard />} />
               <Route path="bookings" element={<ListBookings />} />
+              <Route path="bookings/:id/chat" element={<Conversation />} />
               <Route path="*" element={<PageNotFound />} />
             </Route>
           </Route>

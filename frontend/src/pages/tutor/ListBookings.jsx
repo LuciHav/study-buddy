@@ -82,7 +82,7 @@ export default function ListBookings() {
               </TableCell>
               <TableCell>
                 <Button
-                  onClick={() => navigate(`/tutor/chat/${booking.user.id}`)}
+                  onClick={() => navigate(`${booking.id}/chat`)}
                 >
                   Chat with {booking.user.firstName}
                 </Button>

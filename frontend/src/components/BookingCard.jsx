@@ -90,7 +90,7 @@ export default function BookingCard({ booking }) {
 
             <div className="mt-4 flex justify-end">
               <Link
-                to={`/tutors/${booking.tutor.id}/chat`}
+                to={`/bookings/${booking.id}/chat`}
                 className="text-primary hover:underline text-sm font-medium"
               >
                 Chat with {booking.tutor.firstName}

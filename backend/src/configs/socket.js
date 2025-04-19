@@ -24,8 +24,8 @@ io.on("connection", (socket) => {
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
   // Handle typing event
-  socket.on("typing", ({ receiverId }) => {        
-    const receiverSocketId = getReceiverSocketId(receiverId);        
+  socket.on("typing", ({ receiverId }) => {
+    const receiverSocketId = getReceiverSocketId(receiverId);
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("typing", { senderId: userId });
     }
@@ -36,6 +36,41 @@ io.on("connection", (socket) => {
     const receiverSocketId = getReceiverSocketId(receiverId);
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("stopTyping", { senderId: userId });
+    }
+  });
+
+  // Handle video call request (Caller -> Callee)
+  socket.on("call-user", ({ receiverId }) => {
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("incoming-call", { callerId: userId });
+    }
+  });
+
+  // Handle call answer (Callee -> Caller)
+  socket.on("answer-call", ({ receiverId, accepted }) => {
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("call-answered", { 
+        answererId: userId, 
+        accepted
+      });
+    }
+  });
+
+  // Handle PeerJS ID readiness (Callee -> Caller)
+  socket.on("peer-id-ready", ({ receiverId, peerId }) => {
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("peer-id-ready", { peerId });
+    }
+  });
+
+  // Handle call end
+  socket.on("end-call", ({ receiverId }) => {
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("call-ended", { enderId: userId });
     }
   });
 

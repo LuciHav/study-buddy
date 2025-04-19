@@ -12,6 +12,7 @@ import MessageInput from "./MessageInput";
 import { useSetupSocket } from "@/contexts/SocketProvider";
 import { toast } from "sonner";
 import useListenToSocket from "@/hooks/useListenToSocket";
+import VideoPlayer from "@/components/VideoPlayer";
 
 export default function Conversation() {
   useSetupSocket();
@@ -133,6 +134,7 @@ export default function Conversation() {
         onChange={(e) => setNewMessage(e.target.value)}
         onSubmit={handleSendMessage}
       />
+      <VideoPlayer />
     </div>
   );
 }

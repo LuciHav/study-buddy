@@ -26,6 +26,7 @@ import Bookings from "./pages/tutors/Bookings";
 import Tutors from "./pages/tutors/Tutors";
 import ListBookings from "./pages/tutor/ListBookings";
 import Conversation from "./pages/conversation/Conversation";
+import Profile from "./pages/profile/Profile";
 
 export default function App() {
   return (
@@ -44,6 +45,7 @@ export default function App() {
           <Route path="tutors" element={<Tutors />} />
 
           <Route element={<AuthRoute role={ROLES.USER} />}>
+            <Route path="profile" element={<Profile />} />
             <Route path="tutors/:id" element={<BookTutor />} />
             <Route path="bookings" element={<Bookings />} />
             <Route path="bookings/:id/chat" element={<Conversation />} />

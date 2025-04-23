@@ -21,6 +21,7 @@ import reactionRoute from "./src/routes/reactionRoute.js";
 import bookingRoute from "./src/routes/bookingRoute.js";
 import webhookRoute from "./src/routes/webhookRoute.js";
 import messageRoute from "./src/routes/messageRoute.js";
+import userRoute from "./src/routes/userRoute.js";
 
 import "./src/models/index.js";
 
@@ -32,7 +33,7 @@ app.use(cors());
 app.use("/public", express.static(path.join(path.resolve(), "public")));
 
 await sequelize
-  .sync({alter: true})
+  .sync()
   .then(() => console.log("✅ Database connected and synchronized."))
   .catch((err) => console.error("❌ Database synchronization failed:", err));
 
@@ -47,6 +48,7 @@ app.use("/api/v1/posts/:postId/reactions", reactionRoute);
 app.use("/api/v1/reports", reportRoute);
 app.use("/api/v1/bookings", bookingRoute);
 app.use("/api/v1/messages", messageRoute);
+app.use("/api/v1/users", userRoute);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

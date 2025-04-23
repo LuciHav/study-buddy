@@ -4,6 +4,7 @@ import Comment from "../models/Comment.js";
 import Reaction from "../models/Reaction.js";
 import { deleteFile } from "../utils/helpers.js";
 import HttpError from "../utils/HttpError.js";
+import sequelize from "../configs/database.js";
 
 export const createPost = async (req, res) => {
   const { body, user, file } = req;
@@ -108,26 +109,43 @@ export const getPostById = async (req, res) => {
 
 export const updatePost = async (req, res) => {
   const { id } = req.params;
-  const { title, description, image, subject } = req.body;
+  const { title, description, subject } = req.body;
+  const { file } = req;
 
-  const post = await Post.findByPk(id);
+  const transaction = await sequelize.transaction();
 
-  if (!post) {
-    throw new HttpError(404, "Post not found");
+  try {
+    const post = await Post.findByPk(id, { transaction });
+
+    if (!post) {
+      throw new HttpError(404, "Post not found");
+    }
+
+    const oldImage = post.image;
+
+    post.title = title || post.title;
+    post.description = description || post.description;
+    post.image = file ? file.path : post.image;
+    post.subject = subject || post.subject;
+
+    await post.save({ transaction });
+
+    // Delete the old image if a new one is uploaded
+    if (file && oldImage) {
+      await deleteFile(oldImage);
+    }
+
+    await transaction.commit();
+
+    res.status(200).json({
+      success: true,
+      message: "Post updated successfully",
+      post,
+    });
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
   }
-
-  post.title = title || post.title;
-  post.description = description || post.description;
-  post.image = image || post.image;
-  post.subject = subject || post.subject;
-
-  await post.save();
-
-  res.status(200).json({
-    success: true,
-    message: "Post updated successfully",
-    post,
-  });
 };
 
 export const deletePost = async (req, res) => {
@@ -139,8 +157,25 @@ export const deletePost = async (req, res) => {
     throw new HttpError(404, "Post not found");
   }
 
+  // Find all comments for this post
+  const comments = await Comment.findAll({
+    where: { postId: id },
+  });
+
+  // Delete comment images if they exist
+  for (const comment of comments) {
+    if (comment.image) {
+      await deleteFile(comment.image);
+    }
+  }
+
+  // Delete the post and cascade delete
   await post.destroy();
-  post.image && (await deleteFile(post.image));
+
+  // Delete post image if it exists
+  if (post.image) {
+    await deleteFile(post.image);
+  }
 
   res.status(200).json({
     success: true,

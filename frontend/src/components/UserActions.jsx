@@ -19,7 +19,12 @@ export default function UserActions() {
       <Input type="search" placeholder="Search..." className="w-48" />
       {currentUser ? (
         <>
-          <UserAvatar user={currentUser} />
+          <span
+            className="hover:cursor-pointer"
+            onClick={() => navigate("/profile")}
+          >
+            <UserAvatar user={currentUser} />
+          </span>
           <NavButton to="/login" onClick={handleSignout}>
             Log Out
           </NavButton>

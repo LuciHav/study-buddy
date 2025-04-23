@@ -1,10 +1,10 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
+import UserAvatar from "@/components/UserAvatar";
 import { useNavigate } from "react-router";
 import PostActions from "./PostActions";
 
@@ -19,12 +19,7 @@ export function PostCard({ post }) {
     <div onClick={handleCardClick} className="cursor-pointer">
       <Card className="max-h-[600px] overflow-hidden">
         <CardHeader className="flex flex-row items-center gap-4">
-          <Avatar>
-            <AvatarImage src={post.User?.image} />
-            <AvatarFallback>{`${post.User.firstName.charAt(
-              0
-            )}${post.User.lastName.charAt(0)}`}</AvatarFallback>
-          </Avatar>
+          <UserAvatar user={post.User}/>
           <div>
             <p className="font-semibold">{`${post.User.firstName} ${post.User.lastName}`}</p>
             <p className="text-sm text-muted-foreground">{post.subject}</p>

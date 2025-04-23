@@ -25,14 +25,20 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { SUBJECTS } from "@/constants";
 import { postSchema } from "@/schemas/postSchema";
-import { postFormDataRequest } from "@/utils/apiHelpers";
+import { postFormDataRequest, putFormDataRequest } from "@/utils/apiHelpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
-export function CreatePostDialog({ open, onOpenChange, onPostCreated }) {
+export function CreatePostDialog({
+  open,
+  onOpenChange,
+  onPostCreated,
+  postToEdit = null,
+}) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const isEditing = !!postToEdit;
 
   const form = useForm({
     resolver: zodResolver(postSchema),
@@ -42,6 +48,23 @@ export function CreatePostDialog({ open, onOpenChange, onPostCreated }) {
       subject: "",
     },
   });
+
+  // Update form values when editing a post
+  useEffect(() => {
+    if (isEditing && postToEdit) {
+      form.reset({
+        title: postToEdit.title || "",
+        description: postToEdit.description || "",
+        subject: postToEdit.subject || "",
+      });
+    } else {
+      form.reset({
+        title: "",
+        description: "",
+        subject: "",
+      });
+    }
+  }, [postToEdit, form, isEditing]);
 
   const onSubmit = async (values) => {
     setIsSubmitting(true);
@@ -54,10 +77,21 @@ export function CreatePostDialog({ open, onOpenChange, onPostCreated }) {
       formData.append("image", values.image);
     }
 
-    const resData = await postFormDataRequest({
-      url: "/api/v1/posts",
-      data: formData,
-    });
+    let resData;
+
+    if (isEditing) {
+      // Update existing post
+      resData = await putFormDataRequest({
+        url: `/api/v1/posts/${postToEdit.id}`,
+        data: formData,
+      });
+    } else {
+      // Create new post
+      resData = await postFormDataRequest({
+        url: "/api/v1/posts",
+        data: formData,
+      });
+    }
 
     if (resData.success) {
       onPostCreated(resData.post);
@@ -73,9 +107,13 @@ export function CreatePostDialog({ open, onOpenChange, onPostCreated }) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Create New Post</DialogTitle>
+          <DialogTitle>
+            {isEditing ? "Edit Post" : "Create New Post"}
+          </DialogTitle>
           <DialogDescription>
-            Fill out the form to share your query
+            {isEditing
+              ? "Update your post details"
+              : "Fill out the form to share your query"}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -112,10 +150,7 @@ export function CreatePostDialog({ open, onOpenChange, onPostCreated }) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Subject</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select a subject" />
@@ -138,7 +173,9 @@ export function CreatePostDialog({ open, onOpenChange, onPostCreated }) {
               name="image"
               render={({ field: { onChange } }) => (
                 <FormItem>
-                  <FormLabel>Image</FormLabel>
+                  <FormLabel>
+                    Image {isEditing && "(Leave empty to keep current image)"}
+                  </FormLabel>
                   <FormControl>
                     <Input
                       type="file"
@@ -154,7 +191,7 @@ export function CreatePostDialog({ open, onOpenChange, onPostCreated }) {
               {isSubmitting && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
-              Create Post
+              {isEditing ? "Update" : "Create"} Post
             </Button>
           </form>
         </Form>

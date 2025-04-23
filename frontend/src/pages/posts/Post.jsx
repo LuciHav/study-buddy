@@ -16,7 +16,7 @@ import { formatDistanceToNow } from "date-fns";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import PostActions from "./PostActions";
-import ReportOptions from "./ReportOptions";
+import PostOptions from "./PostOptions";
 import Loader from "@/components/Loader";
 
 export default function Post() {
@@ -46,6 +46,10 @@ export default function Post() {
 
     if (postId) fetchPostData();
   }, [postId]);
+
+  const handlePostUpdate = async (updatedPost) => {
+    setPost((prev) => ({ ...prev, ...updatedPost }));
+  };
 
   const handleAddComment = async (formData) => {
     const resData = await postFormDataRequest({
@@ -107,7 +111,7 @@ export default function Post() {
             </div>
           </div>
           <div>
-            <ReportOptions postId={postId} />
+            <PostOptions post={post} onPostUpdate={handlePostUpdate} />
           </div>
         </CardHeader>
 

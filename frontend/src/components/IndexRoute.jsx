@@ -6,9 +6,17 @@ import { Navigate } from "react-router";
 export default function IndexRoute() {
   const { currentUser } = useAuth();
 
-  if (currentUser?.role === ROLES.ADMIN) {
-    return <Navigate to="/admin" replace />;
+  if (!currentUser) {
+    return <Home />;
   }
 
-  return <Home />;
+  switch (currentUser.role) {
+    case ROLES.ADMIN:
+      return <Navigate to="/admin" replace />;
+    case ROLES.TUTOR:
+      return <Navigate to="/tutor" replace />;
+    case ROLES.USER:
+    default:
+      return <Home />;
+  }
 }

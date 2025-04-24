@@ -15,3 +15,12 @@ export const tutorSchema = z.object({
     .instanceof(FileList, "Image is required")
     .refine((files) => files.length > 0, "Image is required"),
 });
+
+export const editTutorSchema = tutorSchema
+  .omit({
+    password: true,
+    image: true,
+  })
+  .extend({
+    image: tutorSchema.shape.image.optional(),
+  });

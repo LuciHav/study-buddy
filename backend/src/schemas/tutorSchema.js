@@ -12,3 +12,5 @@ export const tutorSchema = z.object({
   experience: z.array(z.string()).optional(),
   hourlyRate: z.string().min(1, "Hourly rate must be at least 1"),
 });
+
+export const editTutorSchema = tutorSchema.partial();

@@ -8,14 +8,14 @@ import {
 } from "../controllers/tutorController.js";
 import upload from "../middlewares/multerMiddleware.js";
 import validate from "../middlewares/validatorMiddleware.js";
-import { tutorSchema } from "../schemas/tutorSchema.js";
+import { editTutorSchema, tutorSchema } from "../schemas/tutorSchema.js";
 
 const router = express.Router();
 
 router.post("/", upload.single("image"), validate(tutorSchema), createTutor);
 router.get("/", getAllTutors);
 router.get("/:id", getTutorByUserId);
-router.put("/:id", upload.single("image"), validate(tutorSchema), updateTutor);
+router.put("/:id", upload.single("image"), validate(editTutorSchema), updateTutor);
 router.delete("/:id", deleteTutor);
 
 export default router;

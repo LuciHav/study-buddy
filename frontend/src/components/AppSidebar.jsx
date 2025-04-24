@@ -4,9 +4,7 @@ import {
   Home,
   MessageSquareWarning,
   Newspaper,
-  Search,
-  Settings,
-  User2
+  User2,
 } from "lucide-react";
 
 import {
@@ -53,22 +51,15 @@ const items = [
     url: "/admin/reports",
     icon: MessageSquareWarning,
   },
-  {
-    title: "Search",
-    url: "#",
-    icon: Search,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
 ];
 
 export function AppSidebar() {
   const { currentUser, clearUser } = useAuth();
-
   const navigate = useNavigate();
+
+  function handleNavigateToProfile() {
+    navigate("/admin/profile");
+  }
 
   function handleSignout() {
     clearUser();
@@ -114,7 +105,7 @@ export function AppSidebar() {
                 className="w-[--radix-popper-anchor-width]"
               >
                 <DropdownMenuItem>
-                  <span>Account</span>
+                  <span onClick={handleNavigateToProfile}>Account</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer">
                   <span onClick={handleSignout}>Sign out</span>

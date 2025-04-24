@@ -21,12 +21,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { tutorSchema } from "@/schemas/tutorSchema";
 import { postFormDataRequest } from "@/utils/apiHelpers";
+import { prepareFormData } from "@/utils/helpers";
 import { toast } from "sonner";
-import { useNavigate } from "react-router";
+import ItemSelector from "@/components/ItemSelector";
 
-export default function CreateTutor() {
-  const navigate = useNavigate();
-  const [subjects, setSubjects] = useState([]);
+export default function CreateTutor({ onSuccess }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm({
     resolver: zodResolver(tutorSchema),
@@ -45,43 +46,29 @@ export default function CreateTutor() {
     },
   });
 
-  const addSubject = (e) => {
-    if (e.key === "Enter" && e.target.value) {
-      const newSubjects = [...subjects, e.target.value];
-      setSubjects(newSubjects);
-      form.setValue("subject", newSubjects);
-      e.target.value = "";
-    }
-  };
-
-  console.log(form.formState.errors);
-
   const onSubmit = async (values) => {
-    const formData = new FormData();
-    for (const key in values) {
-      if (Array.isArray(values[key])) {
-        values[key].forEach((item) => formData.append(key, item));
-      } else {
-        formData.append(key, values[key]);
-      }
-    }
-
-    // Handle image file separately
-    if (values.image && values.image.length > 0) {
-      formData.append("image", values.image[0]);
-    }
-    formData.append("subject", "Other");
+    setIsSubmitting(true);
+    const formData = prepareFormData(
+      values,
+      ["subject", "experience"],
+      ["image"]
+    );
 
     const resData = await postFormDataRequest({
       url: "/api/v1/tutors",
       data: formData,
     });
+
     if (resData.success) {
       toast.success(resData.message);
-      navigate("/admin/tutors");
+      form.reset();
+      setIsOpen(false);
+      if (onSuccess) onSuccess();
     } else {
-      console.log("Error:", resData.message);
+      toast.error(resData.message);
     }
+
+    setIsSubmitting(false);
   };
 
   const handleKeyDown = (e) => {
@@ -91,7 +78,15 @@ export default function CreateTutor() {
   };
 
   return (
-    <Dialog>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        setIsOpen(open);
+        if (!open) {
+          form.reset();
+        }
+      }}
+    >
       <DialogTrigger asChild>
         <Button variant="outline">Add Tutor</Button>
       </DialogTrigger>
@@ -192,7 +187,7 @@ export default function CreateTutor() {
                   <FormLabel>Image</FormLabel>
                   <Input
                     type="file"
-                    accept="*/*"
+                    accept="image/*"
                     onChange={(e) => field.onChange(e.target.files)}
                   />
                   <FormMessage />
@@ -218,23 +213,28 @@ export default function CreateTutor() {
               render={({ field }) => (
                 <FormItem className="md:col-span-2">
                   <FormLabel>Subjects</FormLabel>
-                  <Input
-                    type="text"
-                    placeholder="Type and press Enter"
-                    onKeyDown={addSubject}
-                    {...field}
+                  <ItemSelector
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Add a subject and press Enter"
                   />
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {subjects.map((subject, index) => (
-                      <span
-                        key={index}
-                        className="px-2 py-1 bg-gray-200 rounded-md"
-                      >
-                        {subject}
-                      </span>
-                    ))}
-                  </div>
-                  {subjects.length === 0 && <FormMessage />}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              name="experience"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                  <FormLabel>Experience (Optional)</FormLabel>
+                  <ItemSelector
+                    value={field.value || []}
+                    onChange={field.onChange}
+                    placeholder="Add an experience and press Enter"
+                  />
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -257,8 +257,12 @@ export default function CreateTutor() {
               )}
             />
 
-            <Button type="submit" className="md:col-span-2">
-              Submit
+            <Button
+              type="submit"
+              className="md:col-span-2"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Creating Tutor..." : "Submit"}
             </Button>
           </form>
         </Form>

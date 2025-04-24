@@ -25,3 +25,9 @@ export const generateRandomCode = () => {
   }
   return result.toUpperCase();
 };
+
+export const filterOutOther = (array) => {
+  return Array.isArray(array)
+    ? array.filter((item) => item.toLowerCase() !== "other")
+    : [];
+};

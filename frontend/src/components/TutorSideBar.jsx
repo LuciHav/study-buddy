@@ -4,7 +4,7 @@ import {
   Home,
   Search,
   Settings,
-  User2
+  User2,
 } from "lucide-react";
 
 import {
@@ -58,6 +58,10 @@ export function TutorSidebar() {
 
   const navigate = useNavigate();
 
+  function handleNavigateToProfile() {
+    navigate("/tutor/profile");
+  }
+
   function handleSignout() {
     clearUser();
     navigate("/login");
@@ -102,7 +106,7 @@ export function TutorSidebar() {
                 className="w-[--radix-popper-anchor-width]"
               >
                 <DropdownMenuItem>
-                  <span>Account</span>
+                  <span onClick={handleNavigateToProfile}>Account</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer">
                   <span onClick={handleSignout}>Sign out</span>

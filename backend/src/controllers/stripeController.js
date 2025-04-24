@@ -7,24 +7,49 @@ import stripe from "../services/stripe.js";
 import HttpError from "../utils/HttpError.js";
 
 export const createCheckoutSession = async (req, res, next) => {
-  const { tutorId, hours } = req.body;
+  const { bookingId } = req.body;
   const userId = req.user.id;
 
-  const tutor = await User.findByPk(tutorId, {
+  // Find the booking that should be in APPROVED status
+  const booking = await Booking.findByPk(bookingId, {
     include: {
-      model: Tutor,
-      as: "tutorProfile",
-    },
-  }); 
+      model: User,
+      as: "tutor",
+      include: {
+        model: Tutor,
+        as: "tutorProfile",
+      }
+    }
+  });
 
+  if (!booking) {
+    throw new HttpError(404, `Booking with id ${bookingId} not found`);
+  }
+
+  // Verify the booking belongs to the current user
+  if (booking.userId !== userId) {
+    throw new HttpError(403, "You are not authorized to pay for this booking");
+  }
+
+  // Verify booking is in APPROVED status
+  if (booking.status !== BOOKING_STATUS.APPROVED && booking.status !== BOOKING_STATUS.PENDING) {
+    throw new HttpError(400, "This booking must be in APPROVED or PENDING status");
+  }
+
+  const tutor = booking.tutor;
   if (!tutor || !tutor.tutorProfile) {
-    throw new HttpError(404, `Tutor with id ${tutorId} not found`);
+    throw new HttpError(404, "Tutor information not found");
   }
   
   const customer = await stripe.customers.create({
     email: req.user.email,
     name: req.user.firstName + " " + req.user.lastName,
-    metadata: { userId, tutorId, hours },
+    metadata: { 
+      bookingId: booking.id,
+      userId, 
+      tutorId: booking.tutorId, 
+      hours: booking.hours 
+    },
   });
 
   const session = await stripe.checkout.sessions.create({
@@ -41,12 +66,16 @@ export const createCheckoutSession = async (req, res, next) => {
             description: tutor.tutorProfile.bio,
           },
         },
-        quantity: hours,
+        quantity: booking.hours,
       },
     ],
     success_url: keys.stripe.successUrl,
-    cancel_url: keys.stripe.cancelUrl + "/" + tutorId,
+    cancel_url: keys.stripe.cancelUrl + "/" + booking.tutorId,
   });
+
+  // Update booking status to PENDING
+  booking.status = BOOKING_STATUS.PENDING;
+  await booking.save();
 
   res.status(200).json({
     success: true,
@@ -87,31 +116,36 @@ export const createStripeWebhook = async (req, res) => {
       try {
         const customer = await stripe.customers.retrieve(customerId);
 
-        const { userId, tutorId, hours } = customer?.metadata || {};
+        const { bookingId, userId, tutorId, hours } = customer?.metadata || {};
 
-        if (!userId || !tutorId || !hours) {
+        if (!bookingId || !userId || !tutorId || !hours) {
           console.error(
-            "🚫 Missing metadata: userId, tutorId, or hours not found in Stripe customer."
+            "🚫 Missing metadata: bookingId, userId, tutorId, or hours not found in Stripe customer."
           );
           return res
             .status(400)
             .send("Missing metadata in Stripe customer object.");
         }
 
-        await Booking.create({
-          userId,
-          tutorId,
-          hours: parseInt(hours),
-          totalAmount: amountTotal / 100,
-          status: BOOKING_STATUS.CONFIRMED,
-          paymentIntentId,
-        });
+        // Find the existing booking and update it
+        const booking = await Booking.findByPk(bookingId);
+        
+        if (!booking) {
+          console.error(`❌ Booking with id ${bookingId} not found`);
+          return res.status(400).send(`Booking not found`);
+        }
+
+        // Update booking status and payment details
+        booking.status = BOOKING_STATUS.CONFIRMED;
+        booking.paymentIntentId = paymentIntentId;
+        booking.totalAmount = amountTotal / 100;
+        await booking.save();
 
         console.log(
           `✅ Booking confirmed: User ${userId} booked Tutor ${tutorId} for ${hours} hour(s).`
         );
       } catch (err) {
-        console.error("❌ Failed to create booking from Stripe webhook.", err);
+        console.error("❌ Failed to update booking from Stripe webhook.", err);
         return res.sendStatus(500);
       }
 

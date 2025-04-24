@@ -22,6 +22,7 @@ import Posts from "./pages/posts/Posts";
 import TutorDashboard from "./pages/tutor/Dashboard";
 import BookTutor from "./pages/tutors/BookTutor";
 import BookingSuccess from "./pages/tutors/BookingSuccess";
+import BookingRequestSuccess from "./pages/tutors/BookingRequestSuccess";
 import Bookings from "./pages/tutors/Bookings";
 import Tutors from "./pages/tutors/Tutors";
 import ListBookings from "./pages/tutor/ListBookings";
@@ -50,6 +51,7 @@ export default function App() {
             <Route path="bookings" element={<Bookings />} />
             <Route path="bookings/:id/chat" element={<Conversation />} />
             <Route path="booking/success" element={<BookingSuccess />} />
+            <Route path="booking/request-success" element={<BookingRequestSuccess />} />
             <Route path="posts">
               <Route index element={<Posts />} />
               <Route path=":postId" element={<Post />} />
@@ -63,6 +65,7 @@ export default function App() {
           <Route element={<TutorLayout />}>
             <Route path="tutor">
               <Route index element={<TutorDashboard />} />
+              <Route path="profile" element={<Profile />} />
               <Route path="bookings" element={<ListBookings />} />
               <Route path="bookings/:id/chat" element={<Conversation />} />
               <Route path="*" element={<PageNotFound />} />
@@ -74,6 +77,7 @@ export default function App() {
           <Route element={<AdminLayout />}>
             <Route path="admin">
               <Route index element={<AdminDashboard />} />
+              <Route path="profile" element={<Profile />} />
               <Route path="tutors" element={<AdminTutors />} />
               <Route path="reports" element={<Reports />} />
               <Route path="posts" element={<AdminPosts />} />

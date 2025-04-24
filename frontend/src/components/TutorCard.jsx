@@ -1,25 +1,15 @@
-import { Mail, MapPin, Phone } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Mail, MapPin, Phone } from "lucide-react";
 import NavButton from "./NavButton";
+import UserAvatar from "./UserAvatar";
 
 export default function TutorCard({ tutor }) {
   return (
     <Card className="w-full m-auto max-w-3xl">
       <CardHeader className="flex flex-row items-center gap-4">
-        <Avatar className="h-20 w-20">
-          <AvatarImage
-            className="object-cover"
-            src={`${import.meta.env.VITE_SERVER_URL}/${tutor.image}`}
-            alt={`${tutor.firstName} ${tutor.lastName}`}
-          />
-          <AvatarFallback>
-            {tutor.firstName[0]}
-            {tutor.lastName[0]}
-          </AvatarFallback>
-        </Avatar>
+        <UserAvatar user={tutor} className="w-20 h-20" />
         <div className="flex flex-col">
           <h2 className="text-2xl font-bold">
             {tutor.firstName} {tutor.lastName}

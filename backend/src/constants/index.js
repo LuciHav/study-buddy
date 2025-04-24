@@ -34,7 +34,10 @@ export const REPORT_STATUS = {
 };
 
 export const BOOKING_STATUS = {
-  PENDING: "pending",
-  CONFIRMED: "confirmed",
-  CANCELLED: "cancelled",
-};  
+  REQUESTED: "requested",   // Initial state
+  APPROVED: "approved",     // Tutor approved
+  REJECTED: "rejected",     // Tutor rejected
+  PENDING: "pending",       // Payment initiated
+  CONFIRMED: "confirmed",   // Payment confirmed
+  CANCELLED: "cancelled",   // Booking cancelled
+};

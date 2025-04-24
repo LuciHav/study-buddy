@@ -8,18 +8,25 @@ export default function Bookings() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
+  const fetchBookings = async () => {
+    setLoading(true);
+    const resData = await getRequest({ url: "/api/v1/bookings" });
+    if (resData.success) {
+      setBookings(resData.bookings);
+    } else {
+      console.log("Error:", resData.message);
+      setError(true);
+    }
+    setLoading(false);
+  };
+
   useEffect(() => {
-    (async () => {
-      const resData = await getRequest({ url: "/api/v1/bookings" });
-      if (resData.success) {
-        setBookings(resData.bookings);
-      } else {
-        console.log("Error:", resData.message);
-        setError(true);
-      }
-      setLoading(false);
-    })();
+    fetchBookings();
   }, []);
+
+  const handleStatusUpdate = async () => {
+    await fetchBookings();
+  };
 
   if (loading) return <Loader />;
   if (error) return <p>An Error Occured</p>;
@@ -30,7 +37,11 @@ export default function Bookings() {
         <p className="text-center">You don&apos;t have any bookings yet</p>
       ) : (
         bookings.map((booking) => (
-          <BookingCard key={booking.id} booking={booking} />
+          <BookingCard
+            key={booking.id}
+            booking={booking}
+            onStatusUpdate={handleStatusUpdate}
+          />
         ))
       )}
     </div>

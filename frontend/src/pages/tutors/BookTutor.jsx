@@ -1,10 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 
 import Loader from "@/components/Loader";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -18,9 +17,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import UserAvatar from "@/components/UserAvatar";
 import { bookingSchema } from "@/schemas/bookingSchema";
 import { getRequest, postRequest } from "@/utils/apiHelpers";
 import { Mail, MapPin, Phone } from "lucide-react";
+import { toast } from "sonner";
 
 export default function BookTutor() {
   const [tutor, setTutor] = useState(null);
@@ -29,11 +30,12 @@ export default function BookTutor() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const form = useForm({
     resolver: zodResolver(bookingSchema),
     defaultValues: {
-      hours: 1,
+      hours: 0,
     },
   });
 
@@ -60,14 +62,15 @@ export default function BookTutor() {
     };
 
     const resData = await postRequest({
-      url: `/api/v1/bookings`,
+      url: `/api/v1/bookings/request`,
       data: bookingData,
     });
 
     if (resData.success) {
-      window.location.href = resData.session.url;
+      toast.success("Booking request sent to tutor");
+      navigate("/booking/request-success");
     } else {
-      console.log("Error:", resData.message);
+      toast.error(resData.message);
     }
 
     setIsSubmitting(false);
@@ -80,17 +83,7 @@ export default function BookTutor() {
     <div className="grid gap-6 p-4">
       <Card className="w-full m-auto max-w-3xl">
         <CardHeader className="flex flex-row items-center gap-4">
-          <Avatar className="h-20 w-20">
-            <AvatarImage
-              className="object-cover"
-              src={`${import.meta.env.VITE_SERVER_URL}/${tutor.image}`}
-              alt={`${tutor.firstName} ${tutor.lastName}`}
-            />
-            <AvatarFallback>
-              {tutor.firstName[0]}
-              {tutor.lastName[0]}
-            </AvatarFallback>
-          </Avatar>
+          <UserAvatar user={tutor} className="w-20 h-20" />
           <div className="flex flex-col">
             <h2 className="text-2xl font-bold">
               {tutor.firstName} {tutor.lastName}
@@ -153,6 +146,10 @@ export default function BookTutor() {
           {/* Booking Form */}
           <div className="space-y-4">
             <h3 className="text-xl font-bold">Book a Session</h3>
+            <p className="text-muted-foreground">
+              Your request will be sent to the tutor for approval. After
+              approval, you&apos;ll be able to make payment.
+            </p>
 
             <Form {...form}>
               <form
@@ -182,21 +179,19 @@ export default function BookTutor() {
                   )}
                 />
 
-                {hours && (
-                  <div className="flex justify-between items-center p-3 bg-muted rounded-md">
-                    <span className="font-medium">Total Cost:</span>
-                    <span className="font-bold">
-                      Rs {tutor.hourlyRate * hours}
-                    </span>
-                  </div>
-                )}
+                <div className="flex justify-between items-center p-3 bg-muted rounded-md">
+                  <span className="font-medium">Estimated Cost:</span>
+                  <span className="font-bold">
+                    Rs {tutor.hourlyRate * hours}
+                  </span>
+                </div>
 
                 <Button
                   type="submit"
                   className="w-full"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Processing..." : "Book Session"}
+                  {isSubmitting ? "Sending Request..." : "Send Booking Request"}
                 </Button>
               </form>
             </Form>

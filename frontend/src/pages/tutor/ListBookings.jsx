@@ -10,9 +10,22 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import UserAvatar from "@/components/UserAvatar";
-import { getRequest } from "@/utils/apiHelpers";
+import { getRequest, patchRequest, deleteRequest } from "@/utils/apiHelpers";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
+import { formatDate, getStatusColor } from "@/utils/helpers";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const STRIPE_DASHBOARD_URL = "https://dashboard.stripe.com/test/payments/";
 
@@ -20,77 +33,224 @@ export default function ListBookings() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [bookingToDelete, setBookingToDelete] = useState(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const navigate = useNavigate();
 
+  const fetchBookings = async () => {
+    setLoading(true);
+    const resData = await getRequest({ url: "/api/v1/bookings" });
+    if (resData.success) {
+      setBookings(resData.bookings);
+    } else {
+      console.log("Error:", resData.message);
+      setError(true);
+    }
+    setLoading(false);
+  };
+
   useEffect(() => {
-    (async () => {
-      const resData = await getRequest({ url: "/api/v1/bookings" });
-      if (resData.success) {
-        setBookings(resData.bookings);
-      } else {
-        console.log("Error:", resData.message);
-        setError(true);
-      }
-      setLoading(false);
-    })();
+    fetchBookings();
   }, []);
+
+  const handleApproveBooking = async (bookingId) => {
+    setActionLoading(true);
+    const response = await patchRequest({
+      url: `/api/v1/bookings/${bookingId}/status`,
+      data: { status: "approved" },
+    });
+
+    if (response.success) {
+      toast.success("Booking request approved");
+      await fetchBookings(); // Refresh the list
+    } else {
+      toast.error(response.message);
+    }
+
+    setActionLoading(false);
+  };
+
+  const handleRejectBooking = async (bookingId) => {
+    setActionLoading(true);
+    const response = await patchRequest({
+      url: `/api/v1/bookings/${bookingId}/status`,
+      data: { status: "rejected" },
+    });
+
+    if (response.success) {
+      toast.success("Booking request rejected");
+      await fetchBookings(); // Refresh the list
+    } else {
+      toast.error(response.message);
+    }
+
+    setActionLoading(false);
+  };
+
+  const handleDeleteBooking = async () => {
+    if (!bookingToDelete) return;
+
+    setActionLoading(true);
+    const response = await deleteRequest({
+      url: `/api/v1/bookings/${bookingToDelete}`,
+    });
+
+    if (response.success) {
+      toast.success("Booking deleted successfully");
+      await fetchBookings(); // Refresh the list
+    } else {
+      toast.error(response.message);
+    }
+
+    setActionLoading(false);
+    setShowDeleteDialog(false);
+    setBookingToDelete(null);
+  };
+
+  const openDeleteDialog = (bookingId) => {
+    setBookingToDelete(bookingId);
+    setShowDeleteDialog(true);
+  };
 
   if (loading) return <Loader />;
   if (error) return <p>An Error Occurred</p>;
 
   return (
-    <Table>
-      <TableCaption>A list of all your bookings</TableCaption>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Booking ID</TableHead>
-          <TableHead>Image</TableHead>
-          <TableHead>User Name</TableHead>
-          <TableHead>Hours</TableHead>
-          <TableHead>Amount(Rs)</TableHead>
-          <TableHead>Payment Id</TableHead>
-          <TableHead>Actions</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {bookings.length === 0 ? (
+    <>
+      <Table>
+        <TableCaption>A list of all your bookings</TableCaption>
+        <TableHeader>
           <TableRow>
-            <TableCell colSpan={5} className="text-center">
-              You don&apos;t have any bookings yet
-            </TableCell>
+            <TableHead>Booking ID</TableHead>
+            <TableHead>Image</TableHead>
+            <TableHead>User Name</TableHead>
+            <TableHead>Hours</TableHead>
+            <TableHead>Date</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Amount(Rs)</TableHead>
+            <TableHead>Actions</TableHead>
           </TableRow>
-        ) : (
-          bookings.map((booking) => (
-            <TableRow key={booking.id}>
-              <TableCell>{booking.id}</TableCell>
-              <TableCell>
-                <UserAvatar user={booking.user} />
-              </TableCell>
-              <TableCell>
-                {booking.user.firstName + " " + booking.user.lastName}
-              </TableCell>
-              <TableCell>{booking.hours}</TableCell>
-              <TableCell>{booking.totalAmount}</TableCell>
-              <TableCell>
-                <Button
-                  onClick={() =>
-                    window.open(STRIPE_DASHBOARD_URL + booking.paymentIntentId)
-                  }
-                >
-                  Open In Stripe
-                </Button>
-              </TableCell>
-              <TableCell>
-                <Button
-                  onClick={() => navigate(`${booking.id}/chat`)}
-                >
-                  Chat with {booking.user.firstName}
-                </Button>
+        </TableHeader>
+        <TableBody>
+          {bookings.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={8} className="text-center">
+                You don&apos;t have any bookings yet
               </TableCell>
             </TableRow>
-          ))
-        )}
-      </TableBody>
-    </Table>
+          ) : (
+            bookings.map((booking) => (
+              <TableRow key={booking.id}>
+                <TableCell>{booking.id}</TableCell>
+                <TableCell>
+                  <UserAvatar user={booking.user} />
+                </TableCell>
+                <TableCell>
+                  {booking.user.firstName + " " + booking.user.lastName}
+                </TableCell>
+                <TableCell>{booking.hours}</TableCell>
+                <TableCell>{formatDate(booking.createdAt)}</TableCell>
+                <TableCell>
+                  <Badge
+                    variant="outline"
+                    className={getStatusColor(booking.status)}
+                  >
+                    {booking.status.charAt(0).toUpperCase() +
+                      booking.status.slice(1)}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  {booking.totalAmount ? booking.totalAmount : "Pending"}
+                </TableCell>
+                <TableCell>
+                  <div className="flex gap-2">
+                    {booking.status === "requested" && (
+                      <>
+                        <Button
+                          onClick={() => handleApproveBooking(booking.id)}
+                          disabled={actionLoading}
+                          className="bg-green-600 hover:bg-green-700"
+                          size="sm"
+                        >
+                          Approve
+                        </Button>
+                        <Button
+                          onClick={() => handleRejectBooking(booking.id)}
+                          disabled={actionLoading}
+                          variant="destructive"
+                          size="sm"
+                        >
+                          Reject
+                        </Button>
+                      </>
+                    )}
+
+                    {/* Add delete button for rejected bookings */}
+                    {booking.status === "rejected" && (
+                      <Button
+                        onClick={() => openDeleteDialog(booking.id)}
+                        disabled={actionLoading}
+                        variant="destructive"
+                        size="sm"
+                      >
+                        Delete
+                      </Button>
+                    )}
+
+                    {booking.status === "confirmed" &&
+                      booking.paymentIntentId && (
+                        <Button
+                          onClick={() =>
+                            window.open(
+                              STRIPE_DASHBOARD_URL + booking.paymentIntentId
+                            )
+                          }
+                          size="sm"
+                        >
+                          Stripe Payment
+                        </Button>
+                      )}
+
+                    {booking.status === "confirmed" && (
+                      <Button
+                        onClick={() => navigate(`${booking.id}/chat`)}
+                        size="sm"
+                      >
+                        Chat
+                      </Button>
+                    )}
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))
+          )}
+        </TableBody>
+      </Table>
+
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Booking</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this booking? This action cannot
+              be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={actionLoading}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteBooking}
+              disabled={actionLoading}
+              className="bg-red-500 hover:bg-red-600 text-white"
+            >
+              {actionLoading ? "Deleting..." : "Yes, delete booking"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

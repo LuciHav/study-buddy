@@ -21,16 +21,16 @@ const Booking = sequelize.define("Booking", {
   },
   totalAmount: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
   },
   paymentIntentId: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
     unique: true,
   },
   status: {
     type: DataTypes.ENUM(Object.values(BOOKING_STATUS)),
-    defaultValue: BOOKING_STATUS.PENDING,
+    defaultValue: BOOKING_STATUS.REQUESTED,
   },
 });
 

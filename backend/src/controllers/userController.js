@@ -8,7 +8,7 @@ export const updateUser = async (req, res) => {
   const { body } = req.body;
   const { user, file } = req;
 
-  const userPk = null;
+  let userPk = null;
   // Filter based on user role
   if (user.role === ROLES.ADMIN) userPk = id;
   else userPk = user.id;

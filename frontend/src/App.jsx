@@ -28,6 +28,8 @@ import Tutors from "./pages/tutors/Tutors";
 import ListBookings from "./pages/tutor/ListBookings";
 import Conversation from "./pages/conversation/Conversation";
 import Profile from "./pages/profile/Profile";
+import DataProtection from "./pages/info/DataProtection";
+import TermsOfService from "./pages/info/TermsOfService";
 
 export default function App() {
   return (
@@ -43,6 +45,9 @@ export default function App() {
           <Route path="forgot-password" element={<ForgotPassword />} />
           <Route path="reset-password" element={<ResetPassword />} />
 
+          <Route path="privacy-policy" element={<DataProtection />} />
+          <Route path="terms-of-service" element={<TermsOfService />} />
+
           <Route path="tutors" element={<Tutors />} />
 
           <Route element={<AuthRoute role={ROLES.USER} />}>
@@ -51,7 +56,10 @@ export default function App() {
             <Route path="bookings" element={<Bookings />} />
             <Route path="bookings/:id/chat" element={<Conversation />} />
             <Route path="booking/success" element={<BookingSuccess />} />
-            <Route path="booking/request-success" element={<BookingRequestSuccess />} />
+            <Route
+              path="booking/request-success"
+              element={<BookingRequestSuccess />}
+            />
             <Route path="posts">
               <Route index element={<Posts />} />
               <Route path=":postId" element={<Post />} />

@@ -41,7 +41,9 @@ export default function ContactUs() {
   return (
     <div className="container mx-auto py-12">
       <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold tracking-tight md:text-4xl">Contact Us</h1>
+        <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
+          Contact Us
+        </h1>
         <p className="mt-2 text-muted-foreground">
           Have questions? We&apos;d love to hear from you. Send us a message and
           we&apos;ll respond as soon as possible.
@@ -147,10 +149,18 @@ export default function ContactUs() {
 
           <Card>
             <CardContent className="p-0">
-              <div className="aspect-video w-full bg-muted">
-                <div className="flex h-full items-center justify-center text-muted-foreground">
-                  Map Location
-                </div>
+              <div className="aspect-video w-full overflow-hidden rounded-b-lg">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1419.6480751391728!2d87.30123877732912!3d26.65519349043812!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39ef6ea070e7b18b%3A0x2959e2a3e2bf54e0!2sItahari%20International%20College!5e1!3m2!1sen!2snp!4v1745504816009!5m2!1sen!2snp"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen=""
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Study Buddy Office Location"
+                  className="aspect-video"
+                ></iframe>
               </div>
             </CardContent>
           </Card>

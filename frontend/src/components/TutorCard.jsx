@@ -64,7 +64,7 @@ export default function TutorCard({ tutor }) {
         <div className="flex items-center justify-between">
           <div className="text-lg font-semibold">Hourly Rate</div>
           <div className="text-2xl font-bold">Rs {tutor.hourlyRate}/hr</div>
-          <NavButton to={`${tutor.userId}`}>Booking</NavButton>
+          <NavButton to={`${tutor.id}`}>Booking</NavButton>
         </div>
       </CardContent>
     </Card>

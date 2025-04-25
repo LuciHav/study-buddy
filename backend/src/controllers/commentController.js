@@ -11,9 +11,15 @@ export const createComment = async (req, res, _next) => {
   const post = await Post.findByPk(postId);
   if (!post) throw new HttpError(404, `Post with id #${postId} not found.`);
 
+  let level = 0;
   if (parentId) {
     const parentComment = await Comment.findByPk(parentId);
     if (!parentComment) throw new HttpError(404, `Parent comment not found.`);
+    
+    level = parentComment.level + 1;
+    if (level > 5) {
+      throw new HttpError(400, "Maximum nesting level (5) reached. Cannot add more replies.");
+    }
   }
 
   const newComment = await Comment.create({
@@ -22,6 +28,7 @@ export const createComment = async (req, res, _next) => {
     postId,
     userId: user.id,
     parentId: parentId || null,
+    level,
   });
 
   res.status(201).json({
@@ -32,6 +39,7 @@ export const createComment = async (req, res, _next) => {
       comment,
       image: file ? file.path : null,
       parentId: parentId || null,
+      level,
       createdAt: newComment.createdAt,
       user: {
         id: user.id,
@@ -50,7 +58,7 @@ export const getAllComment = async (req, res, _next) => {
   const post = await Post.findByPk(postId);
   if (!post) throw new HttpError(404, `Post with id #${postId} not found.`);
 
-  // Fetch all comments without nesting
+  // Fetch all comments with their level information
   const comments = await Comment.findAll({
     where: { postId },
     include: [
@@ -60,7 +68,7 @@ export const getAllComment = async (req, res, _next) => {
         attributes: ["id", "firstName", "lastName", "image"],
       },
     ],
-    order: [["createdAt", "ASC"]],
+    order: [["level", "ASC"], ["createdAt", "ASC"]],
   });
 
   const commentMap = {};

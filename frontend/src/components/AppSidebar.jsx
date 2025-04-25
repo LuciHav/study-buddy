@@ -96,7 +96,7 @@ export function AppSidebar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
-                  <User2 /> {currentUser.firstName}
+                  <User2 /> {currentUser.firstName + " " + currentUser.lastName}
                   <ChevronUp className="ml-auto" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
@@ -104,11 +104,17 @@ export function AppSidebar() {
                 side="top"
                 className="w-[--radix-popper-anchor-width]"
               >
-                <DropdownMenuItem>
-                  <span onClick={handleNavigateToProfile}>Account</span>
+                <DropdownMenuItem
+                  onClick={handleNavigateToProfile}
+                  className="cursor-pointer"
+                >
+                  <span>Account</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer">
-                  <span onClick={handleSignout}>Sign out</span>
+                <DropdownMenuItem
+                  onClick={handleSignout}
+                  className="cursor-pointer"
+                >
+                  <span>Sign out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

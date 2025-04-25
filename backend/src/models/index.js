@@ -33,6 +33,8 @@ Reaction.belongsTo(Post, { foreignKey: "postId", as: "post" });
 
 Booking.belongsTo(User, { foreignKey: "userId", as: "user" });
 Booking.belongsTo(User, { foreignKey: "tutorId", as: "tutor" });
+User.hasMany(Booking, { foreignKey: "userId", as: "userBookings" });
+User.hasMany(Booking, { foreignKey: "tutorId", as: "tutorBookings" });
 
 User.hasMany(Message, { foreignKey: 'senderId', as: 'sentMessages' });
 User.hasMany(Message, { foreignKey: 'receiverId', as: 'receivedMessages' });

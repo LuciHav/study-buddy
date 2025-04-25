@@ -6,12 +6,17 @@ const Comment = sequelize.define(
   {
     comment: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
     },
     image: {
       type: DataTypes.STRING,
       allowNull: true,
     },
+    level: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    }
   },
   {
     timestamps: true,

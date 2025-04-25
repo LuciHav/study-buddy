@@ -7,6 +7,13 @@ export const formatDate = (dateString) => {
   }).format(date);
 };
 
+export const formatMonth = (month) => {
+  if (!month) return "";
+  const [year, monthNum] = month.split("-");
+  const date = new Date(year, parseInt(monthNum) - 1, 1);
+  return date.toLocaleString("default", { month: "short" });
+};
+
 export const formatCurrency = (amount) => {
   if (!amount) return "Pending";
   return new Intl.NumberFormat("en-US", {

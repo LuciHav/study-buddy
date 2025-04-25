@@ -1,5 +1,6 @@
 import { CommentForm } from "@/components/CommentForm";
 import { CommentItem } from "@/components/CommentItem";
+import Loader from "@/components/Loader";
 import {
   Card,
   CardContent,
@@ -7,17 +8,12 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import UserAvatar from "@/components/UserAvatar";
-import {
-  getRequest,
-  postFormDataRequest,
-  postRequest,
-} from "@/utils/apiHelpers";
+import { getRequest, postFormDataRequest } from "@/utils/apiHelpers";
 import { formatDistanceToNow } from "date-fns";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import PostActions from "./PostActions";
 import PostOptions from "./PostOptions";
-import Loader from "@/components/Loader";
 
 export default function Post() {
   const { postId } = useParams();
@@ -63,27 +59,34 @@ export default function Post() {
     }
   };
 
-  const handleAddReply = async (parentId, comment) => {
-    const resData = await postRequest({
+  const handleAddReply = async (formData) => {
+    const resData = await postFormDataRequest({
       url: `/api/v1/posts/${postId}/comments`,
-      data: { comment, parentId },
+      data: formData,
     });
 
     if (resData.success) {
-      const updatedComments = (comments) => {
-        const addReplyRecursive = (commentList) => {
-          return commentList.map((c) => {
-            if (c.id === parentId) {
-              return { ...c, replies: [...c.replies, resData.comment] };
-            }
-            return { ...c, replies: addReplyRecursive(c.replies) };
-          });
-        };
+      const parentId = formData.get("parentId");
 
-        return addReplyRecursive(comments);
+      const updateRepliesRecursively = (comments) => {
+        return comments.map((comment) => {
+          if (comment.id == parentId) {
+            return {
+              ...comment,
+              replies: [...comment.replies, resData.comment],
+            };
+          }
+          if (comment.replies?.length > 0) {
+            return {
+              ...comment,
+              replies: updateRepliesRecursively(comment.replies),
+            };
+          }
+          return comment;
+        });
       };
 
-      setComments(updatedComments);
+      setComments((prevComments) => updateRepliesRecursively(prevComments));
     } else {
       console.error(resData.message);
     }
@@ -138,7 +141,7 @@ export default function Post() {
       {/* Add comment section */}
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-4">Comments</h2>
-        <CommentForm onSubmit={handleAddComment} />
+        <CommentForm onSubmit={handleAddComment} id="main-comment" />
       </div>
 
       {/* Comments list */}

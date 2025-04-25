@@ -33,6 +33,7 @@ export default function Bookings() {
 
   return (
     <div className="grid gap-6 p-4">
+      <h1 className="text-3xl font-bold">Bookings</h1>
       {bookings.length === 0 ? (
         <p className="text-center">You don&apos;t have any bookings yet</p>
       ) : (

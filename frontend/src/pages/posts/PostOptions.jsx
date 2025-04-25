@@ -10,14 +10,28 @@ import { toast } from "sonner";
 import { CreatePostDialog } from "./CreatePostDialog";
 import DeletePostDialog from "./DeletePostDialog";
 import ReportPostDialog from "./ReportPostDialog";
+import useAuth from "@/contexts/AuthProvider";
 
 export default function PostOptions({ post, onPostUpdate }) {
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { currentUser } = useAuth();
 
   const handleEdit = () => {
     setEditDialogOpen(true);
+    setDropdownOpen(false);
+  };
+
+  const handleReportClick = () => {
+    setReportDialogOpen(true);
+    setDropdownOpen(false);
+  };
+
+  const handleDeleteClick = () => {
+    setDeleteDialogOpen(true);
+    setDropdownOpen(false);
   };
 
   const handlePostUpdated = (updatedPost) => {
@@ -27,21 +41,25 @@ export default function PostOptions({ post, onPostUpdate }) {
   };
 
   return (
-    <div className="relative">
-      <DropdownMenu>
+    <div className="relative z-10">
+      <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
         <DropdownMenuTrigger asChild>
           <CircleEllipsis className="w-full hover:cursor-pointer" />
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-40">
-          <DropdownMenuItem onClick={() => setReportDialogOpen(true)}>
-            Report
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleEdit}>
-            Edit
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setDeleteDialogOpen(true)}>
-            Delete
-          </DropdownMenuItem>
+          {currentUser.id !== post.User.id && (
+            <DropdownMenuItem onClick={handleReportClick}>
+              Report
+            </DropdownMenuItem>
+          )}
+          {currentUser.id === post.User.id && (
+            <>
+              <DropdownMenuItem onClick={handleEdit}>Edit</DropdownMenuItem>
+              <DropdownMenuItem onClick={handleDeleteClick}>
+                Delete
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 

@@ -19,17 +19,21 @@ export default function Tutors() {
       }
       setLoading(false);
     })();
-  }, []);  
+  }, []);
 
-  if (loading) return <Loader/>;
+  if (loading) return <Loader />;
   if (error) return <p>An Error Occured</p>;
 
   return (
-    <div className="grid gap-6 p-4">
+    <div className="p-4 h-[calc(100vh-4rem)] overflow-y-auto hide-scrollbar">
+      <h1 className="text-3xl font-bold mb-6">Tutors</h1>
+
       {tutors.length === 0 ? (
         <p className="text-center">No tutors added yet</p>
       ) : (
-        tutors.map((tutor) => <TutorCard key={tutor.id} tutor={tutor} />)
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 auto-rows-max">
+          {tutors.map((tutor) => <TutorCard key={tutor.id} tutor={tutor} />)}
+        </div>
       )}
     </div>
   );

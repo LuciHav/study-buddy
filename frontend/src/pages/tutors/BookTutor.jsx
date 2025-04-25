@@ -81,6 +81,8 @@ export default function BookTutor() {
 
   return (
     <div className="grid gap-6 p-4">
+      <h1 className="text-3xl font-bold text-center">Book Tutor</h1>
+
       <Card className="w-full m-auto max-w-3xl">
         <CardHeader className="flex flex-row items-center gap-4">
           <UserAvatar user={tutor} className="w-20 h-20" />

@@ -25,7 +25,7 @@ export const createPost = async (req, res) => {
 export const getAllPosts = async (req, res) => {
   const { user } = req;
   const posts = await Post.findAll({
-    include: [{ model: User, attributes: ["firstName", "lastName", "image"] }],
+    include: [{ model: User, attributes: ["id", "firstName", "lastName", "image"] }],
   });
 
   // Check if the user has reacted on each post
@@ -69,7 +69,7 @@ export const getPostById = async (req, res) => {
   const { user } = req;
 
   const post = await Post.findByPk(id, {
-    include: [{ model: User, attributes: ["firstName", "lastName", "image"] }],
+    include: [{ model: User, attributes: ["id", "firstName", "lastName", "image"] }],
   });
 
   if (!post) {

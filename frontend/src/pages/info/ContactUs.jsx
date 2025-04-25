@@ -11,6 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { contactSchema } from "@/schemas/contactSchema";
+import { postRequest } from "@/utils/apiHelpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Facebook,
@@ -21,9 +22,12 @@ import {
   Phone,
   Twitter,
 } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 export default function ContactUs() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm({
     resolver: zodResolver(contactSchema),
     defaultValues: {
@@ -35,7 +39,19 @@ export default function ContactUs() {
   });
 
   const onSubmit = async (data) => {
-    console.log(data);
+    setIsSubmitting(true);
+    const resData = await postRequest({
+      url: "/api/v1/contacts",
+      data,
+    });
+
+    if (resData.success) {
+      toast.success(resData.message);
+      form.reset();
+    } else {
+      toast.error(resData.message);
+    }
+    setIsSubmitting(false);
   };
 
   return (
@@ -74,7 +90,11 @@ export default function ContactUs() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="your@email.com" {...field} />
+                      <Input
+                        type="email"
+                        placeholder="your@email.com"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -110,8 +130,8 @@ export default function ContactUs() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full">
-                Send Message
+              <Button type="submit" className="w-full" disabled={isSubmitting}>
+                {isSubmitting ? "Sending..." : "Send Message"}
               </Button>
             </form>
           </Form>

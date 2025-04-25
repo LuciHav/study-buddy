@@ -30,6 +30,7 @@ import Conversation from "./pages/conversation/Conversation";
 import Profile from "./pages/profile/Profile";
 import DataProtection from "./pages/info/DataProtection";
 import TermsOfService from "./pages/info/TermsOfService";
+import AdminContacts from "./pages/admin/contacts/AdminContacts";
 
 export default function App() {
   return (
@@ -89,6 +90,7 @@ export default function App() {
               <Route path="tutors" element={<AdminTutors />} />
               <Route path="reports" element={<Reports />} />
               <Route path="posts" element={<AdminPosts />} />
+              <Route path="contacts" element={<AdminContacts />} />
               <Route path="*" element={<PageNotFound />} />
             </Route>
           </Route>

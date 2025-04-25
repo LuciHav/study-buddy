@@ -5,6 +5,7 @@ import {
   MessageSquareWarning,
   Newspaper,
   User2,
+  Mail,
 } from "lucide-react";
 
 import {
@@ -50,6 +51,11 @@ const items = [
     title: "Report",
     url: "/admin/reports",
     icon: MessageSquareWarning,
+  },
+  {
+    title: "Contacts",
+    url: "/admin/contacts",
+    icon: Mail,
   },
 ];
 

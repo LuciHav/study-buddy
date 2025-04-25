@@ -29,13 +29,19 @@ export default function Navbar() {
   ];
 
   return (
-    <nav>
-      <ul className="flex items-center space-x-10">
+    <nav className="flex">
+      <ul className="flex md:items-center md:space-x-10 flex-col md:flex-row space-y-4 md:space-y-0 w-full">
         {navLinks.map((link, index) => (
           <li key={index}>
             <NavLink
               to={link.href}
-              className={({ isActive }) => (isActive ? "font-semibold" : "")}
+              className={({ isActive }) =>
+                `${
+                  isActive
+                    ? "font-semibold text-primary"
+                    : "text-muted-foreground"
+                } hover:text-primary transition-colors`
+              }
             >
               {link.name}
             </NavLink>

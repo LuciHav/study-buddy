@@ -15,8 +15,10 @@ export default function UserActions() {
   }
 
   return (
-    <div className="flex items-center space-x-4">
-      <Input type="search" placeholder="Search..." className="w-48" />
+    <div className="flex items-center gap-2 md:gap-4">
+      <div className="hidden md:block">
+        <Input type="search" placeholder="Search..." className="w-48" />
+      </div>
       {currentUser ? (
         <>
           <span
@@ -25,17 +27,19 @@ export default function UserActions() {
           >
             <UserAvatar user={currentUser} />
           </span>
-          <NavButton to="/login" onClick={handleSignout}>
-            Log Out
-          </NavButton>
+          <div className="hidden md:block">
+            <NavButton to="/login" onClick={handleSignout}>
+              Log Out
+            </NavButton>
+          </div>
         </>
       ) : (
-        <>
+        <div className="hidden md:flex items-center gap-4">
           <NavButton to="/login" variant="outline">
             Log In
           </NavButton>
           <NavButton to="/signup">Sign Up</NavButton>
-        </>
+        </div>
       )}
       <ModeToggle />
     </div>

@@ -36,6 +36,7 @@ export default function ListBookings() {
   const [actionLoading, setActionLoading] = useState(false);
   const [bookingToDelete, setBookingToDelete] = useState(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState(null);
   const navigate = useNavigate();
 
   const fetchBookings = async () => {
@@ -113,6 +114,10 @@ export default function ListBookings() {
     setShowDeleteDialog(true);
   };
 
+  const handleShowDetails = (booking) => {
+    setSelectedBooking(booking);
+  };
+
   if (loading) return <Loader />;
   if (error) return <p>An Error Occurred</p>;
 
@@ -122,20 +127,22 @@ export default function ListBookings() {
         <TableCaption>A list of all your bookings</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead>Booking ID</TableHead>
+            <TableHead>ID</TableHead>
             <TableHead>Image</TableHead>
             <TableHead>User Name</TableHead>
+            <TableHead>Type</TableHead>
+            <TableHead>Location</TableHead>
+            <TableHead>Period</TableHead>
             <TableHead>Hours</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead>Status</TableHead>
             <TableHead>Amount(Rs)</TableHead>
+            <TableHead>Status</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {bookings.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={8} className="text-center">
+              <TableCell colSpan={10} className="text-center">
                 You don&apos;t have any bookings yet
               </TableCell>
             </TableRow>
@@ -149,8 +156,27 @@ export default function ListBookings() {
                 <TableCell>
                   {booking.user.firstName + " " + booking.user.lastName}
                 </TableCell>
+                <TableCell>
+                  <Badge variant="outline">
+                    {booking.teachingType.charAt(0).toUpperCase() +
+                      booking.teachingType.slice(1)}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  {booking.teachingType === "physical"
+                    ? booking.location
+                    : "Online"}
+                </TableCell>
+                <TableCell>
+                  <div className="flex flex-col gap-1 text-sm">
+                    <span>From: {formatDate(booking.startDate)}</span>
+                    <span>To: {formatDate(booking.endDate)}</span>
+                  </div>
+                </TableCell>
                 <TableCell>{booking.hours}</TableCell>
-                <TableCell>{formatDate(booking.createdAt)}</TableCell>
+                <TableCell>
+                  {booking.totalAmount ? booking.totalAmount : "Pending"}
+                </TableCell>
                 <TableCell>
                   <Badge
                     variant="outline"
@@ -159,9 +185,6 @@ export default function ListBookings() {
                     {booking.status.charAt(0).toUpperCase() +
                       booking.status.slice(1)}
                   </Badge>
-                </TableCell>
-                <TableCell>
-                  {booking.totalAmount ? booking.totalAmount : "Pending"}
                 </TableCell>
                 <TableCell>
                   <div className="flex gap-2">
@@ -183,11 +206,19 @@ export default function ListBookings() {
                         >
                           Reject
                         </Button>
+
+                        <Button
+                          onClick={() => handleShowDetails(booking)}
+                          size="sm"
+                          variant="outline"
+                        >
+                          Details
+                        </Button>
                       </>
                     )}
 
-                    {/* Add delete button for rejected bookings */}
-                    {booking.status === "rejected" && (
+                    {(booking.status === "rejected" ||
+                      booking.status === "completed") && (
                       <Button
                         onClick={() => openDeleteDialog(booking.id)}
                         disabled={actionLoading}
@@ -248,6 +279,87 @@ export default function ListBookings() {
             >
               {actionLoading ? "Deleting..." : "Yes, delete booking"}
             </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Details Dialog */}
+      <AlertDialog
+        open={!!selectedBooking}
+        onOpenChange={() => setSelectedBooking(null)}
+      >
+        <AlertDialogContent className="max-w-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Booking Details</AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-4 mt-4">
+                {selectedBooking && (
+                  <>
+                    <div className="flex items-center gap-4">
+                      <UserAvatar
+                        user={selectedBooking.user}
+                        className="h-16 w-16"
+                      />
+                      <div>
+                        <h3 className="font-semibold text-lg">
+                          {selectedBooking.user.firstName}{" "}
+                          {selectedBooking.user.lastName}
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          Booking ID: {selectedBooking.id}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="grid gap-2">
+                      <div className="flex justify-between">
+                        <span className="font-medium">Teaching Type:</span>
+                        <span>{selectedBooking.teachingType}</span>
+                      </div>
+                      {selectedBooking.teachingType === "physical" && (
+                        <div className="flex justify-between">
+                          <span className="font-medium">Location:</span>
+                          <span>{selectedBooking.location}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between">
+                        <span className="font-medium">Start Date:</span>
+                        <span>{formatDate(selectedBooking.startDate)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="font-medium">End Date:</span>
+                        <span>{formatDate(selectedBooking.endDate)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="font-medium">Hours:</span>
+                        <span>{selectedBooking.hours}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="font-medium">Status:</span>
+                        <Badge
+                          variant="outline"
+                          className={getStatusColor(selectedBooking.status)}
+                        >
+                          {selectedBooking.status.charAt(0).toUpperCase() +
+                            selectedBooking.status.slice(1)}
+                        </Badge>
+                      </div>
+                      {selectedBooking.remarks && (
+                        <div className="mt-4">
+                          <span className="font-medium">Remarks:</span>
+                          <p className="mt-1 text-muted-foreground whitespace-pre-line">
+                            {selectedBooking.remarks}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction>Close</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

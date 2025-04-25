@@ -40,4 +40,5 @@ export const BOOKING_STATUS = {
   PENDING: "pending",       // Payment initiated
   CONFIRMED: "confirmed",   // Payment confirmed
   CANCELLED: "cancelled",   // Booking cancelled
+  COMPLETED: "completed",   // Booking completed
 };

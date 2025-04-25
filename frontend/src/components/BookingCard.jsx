@@ -1,11 +1,9 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CalendarClock, Clock, DollarSign } from "lucide-react";
+import { CalendarRange, MapPin, Clock, DollarSign, Video } from "lucide-react";
 import { Link } from "react-router";
-import useAuth from "@/contexts/AuthProvider";
-import { ROLES } from "@/constants";
-import { patchRequest, postRequest, deleteRequest } from "@/utils/apiHelpers";
+import { postRequest, deleteRequest } from "@/utils/apiHelpers";
 import { useState } from "react";
 import { toast } from "sonner";
 import {
@@ -22,43 +20,8 @@ import { formatCurrency, formatDate, getStatusColor } from "@/utils/helpers";
 import UserAvatar from "./UserAvatar";
 
 export default function BookingCard({ booking, onStatusUpdate }) {
-  const { currentUser } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
-
-  const handleApproveBooking = async () => {
-    setIsLoading(true);
-    const response = await patchRequest({
-      url: `/api/v1/bookings/${booking.id}/status`,
-      data: { status: "approved" },
-    });
-
-    if (response.success) {
-      toast.success("Booking request approved");
-      if (onStatusUpdate) onStatusUpdate();
-    } else {
-      toast.error(response.message);
-    }
-
-    setIsLoading(false);
-  };
-
-  const handleRejectBooking = async () => {
-    setIsLoading(true);
-    const response = await patchRequest({
-      url: `/api/v1/bookings/${booking.id}/status`,
-      data: { status: "rejected" },
-    });
-
-    if (response.success) {
-      toast.success("Booking request rejected");
-      if (onStatusUpdate) onStatusUpdate();
-    } else {
-      toast.error(response.message);
-    }
-
-    setIsLoading(false);
-  };
 
   const handleMakePayment = async () => {
     setIsLoading(true);
@@ -68,7 +31,6 @@ export default function BookingCard({ booking, onStatusUpdate }) {
     });
 
     if (response.success && response.session) {
-      // Redirect to Stripe checkout
       window.location.href = response.session.url;
     } else {
       toast.error(response.message);
@@ -95,53 +57,19 @@ export default function BookingCard({ booking, onStatusUpdate }) {
   };
 
   const canCancel = () => {
-    // User can cancel booking if it's not confirmed
-    if (currentUser?.role === ROLES.USER) {
-      return ["requested", "approved", "pending", "rejected"].includes(
-        booking.status.toLowerCase()
-      );
-    }
-
-    // Tutor can cancel booking if it's not confirmed
-    if (currentUser?.role === ROLES.TUTOR) {
-      return booking.status.toLowerCase() !== "confirmed";
-    }
-
-    return false;
+    return ["requested", "approved", "pending", "rejected"].includes(
+      booking.status.toLowerCase()
+    );
   };
 
   const renderActionButtons = () => {
-    // Tutor actions for requested bookings
-    if (currentUser?.role === ROLES.TUTOR && booking.status === "requested") {
-      return (
-        <div className="flex gap-2 mt-4">
-          <Button
-            onClick={handleApproveBooking}
-            disabled={isLoading}
-            className="bg-green-600 hover:bg-green-700"
-          >
-            Approve
-          </Button>
-          <Button
-            onClick={handleRejectBooking}
-            disabled={isLoading}
-            variant="destructive"
-          >
-            Reject
-          </Button>
-        </div>
-      );
-    }
-
-    // Tutor cancel button (for non-confirmed bookings)
-    if (currentUser?.role === ROLES.TUTOR && booking.status !== "confirmed") {
+    if (booking.status === "completed") {
       return (
         <div className="mt-4">
           <Button
             onClick={() => setShowCancelDialog(true)}
             disabled={isLoading}
-            variant="outline"
-            className="border-red-500 text-red-500 hover:bg-red-50"
+            variant="destructive"
           >
             Delete Booking
           </Button>
@@ -149,11 +77,7 @@ export default function BookingCard({ booking, onStatusUpdate }) {
       );
     }
 
-    // User actions for approved bookings
-    if (
-      currentUser?.role === ROLES.USER &&
-      (booking.status === "approved" || booking.status === "pending")
-    ) {
+    if (booking.status === "approved" || booking.status === "pending") {
       return (
         <div className="flex flex-wrap gap-2 mt-4">
           <Button
@@ -177,11 +101,7 @@ export default function BookingCard({ booking, onStatusUpdate }) {
       );
     }
 
-    // Show cancel button for requested or rejected bookings
-    if (
-      currentUser?.role === ROLES.USER &&
-      (booking.status === "requested" || booking.status === "rejected")
-    ) {
+    if (booking.status === "requested" || booking.status === "rejected") {
       return (
         <div className="mt-4">
           <Button
@@ -189,9 +109,7 @@ export default function BookingCard({ booking, onStatusUpdate }) {
             disabled={isLoading}
             variant="destructive"
           >
-            {booking.status === "rejected"
-              ? "Delete Booking"
-              : "Cancel Request"}
+            {booking.status === "rejected" ? "Delete Booking" : "Cancel Request"}
           </Button>
         </div>
       );
@@ -203,77 +121,98 @@ export default function BookingCard({ booking, onStatusUpdate }) {
   return (
     <>
       <Card className="overflow-hidden">
-        <CardContent className="p-0">
-          <div className="flex flex-col md:flex-row">
-            {/* Tutor/user info */}
-            <div className="p-6 md:w-1/3 bg-muted/30 flex flex-col justify-center">
-              <div className="flex items-center justify-center md:justify-start mb-2">
-                <UserAvatar user={booking.tutor} className="w-12 h-12" />
+        <CardContent className="p-6">
+          <div className="flex flex-col space-y-6">
+            {/* Tutor info */}
+            <div className="flex items-center space-x-4">
+              <UserAvatar user={booking.tutor} className="w-12 h-12" />
+              <div>
+                <h3 className="text-lg font-semibold">
+                  {booking.tutor.firstName} {booking.tutor.lastName}
+                </h3>
+                <Badge
+                  variant="outline"
+                  className={getStatusColor(booking.status)}
+                >
+                  {booking.status.charAt(0).toUpperCase() +
+                    booking.status.slice(1)}
+                </Badge>
               </div>
-              <h3 className="text-lg font-semibold text-center md:text-left">
-                {currentUser?.role === ROLES.USER
-                  ? `${booking.tutor.firstName} ${booking.tutor.lastName}`
-                  : `${booking.user.firstName} ${booking.user.lastName}`}
-              </h3>
-              <Badge
-                variant="outline"
-                className={`mt-2 self-center md:self-start ${getStatusColor(
-                  booking.status
-                )}`}
-              >
-                {booking.status.charAt(0).toUpperCase() +
-                  booking.status.slice(1)}
-              </Badge>
             </div>
 
             {/* Booking details */}
-            <div className="p-6 md:w-2/3 flex flex-col justify-center">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="flex items-center">
-                  <Clock className="h-5 w-5 mr-2 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Hours</p>
-                    <p className="font-medium">{booking.hours} hours</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center">
-                  <DollarSign className="h-5 w-5 mr-2 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Total</p>
-                    <p className="font-medium">
-                      {formatCurrency(booking.totalAmount)}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex items-center">
+                {booking.teachingType === "online" ? (
+                  <Video className="h-5 w-5 mr-2 text-muted-foreground" />
+                ) : (
+                  <MapPin className="h-5 w-5 mr-2 text-muted-foreground" />
+                )}
+                <div>
+                  <p className="text-sm text-muted-foreground">Teaching Type</p>
+                  <p className="font-medium capitalize">
+                    {booking.teachingType}
+                  </p>
+                  {booking.teachingType === "physical" && booking.location && (
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {booking.location}
                     </p>
-                  </div>
+                  )}
                 </div>
+              </div>
 
-                <div className="flex items-center">
-                  <CalendarClock className="h-5 w-5 mr-2 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Booked on</p>
-                    <p className="font-medium">
-                      {formatDate(booking.createdAt)}
-                    </p>
+              <div className="flex items-center">
+                <CalendarRange className="h-5 w-5 mr-2 text-muted-foreground" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Period</p>
+                  <div className="text-sm">
+                    <p>From: {formatDate(booking.startDate)}</p>
+                    <p>To: {formatDate(booking.endDate)}</p>
                   </div>
                 </div>
               </div>
 
-              {renderActionButtons()}
-
-              {booking.status === "confirmed" && (
-                <div className="mt-4 flex justify-end">
-                  <Link
-                    to={`/bookings/${booking.id}/chat`}
-                    className="text-primary hover:underline text-sm font-medium"
-                  >
-                    Chat with{" "}
-                    {currentUser?.role === ROLES.USER
-                      ? booking.tutor.firstName
-                      : booking.user.firstName}
-                  </Link>
+              <div className="flex items-center">
+                <Clock className="h-5 w-5 mr-2 text-muted-foreground" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Hours</p>
+                  <p className="font-medium">{booking.hours} hours</p>
                 </div>
-              )}
+              </div>
+
+              <div className="flex items-center">
+                <DollarSign className="h-5 w-5 mr-2 text-muted-foreground" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Total Amount</p>
+                  <p className="font-medium">
+                    {formatCurrency(booking.totalAmount)}
+                  </p>
+                </div>
+              </div>
             </div>
+
+            {/* Remarks */}
+            {booking.remarks && (
+              <div className="bg-muted/30 p-4 rounded-lg">
+                <p className="text-sm text-muted-foreground font-medium mb-1">
+                  Remarks
+                </p>
+                <p className="text-sm whitespace-pre-line">{booking.remarks}</p>
+              </div>
+            )}
+
+            {renderActionButtons()}
+
+            {booking.status === "confirmed" && (
+              <div className="flex justify-end">
+                <Link
+                  to={`/bookings/${booking.id}/chat`}
+                  className="text-primary hover:underline text-sm font-medium"
+                >
+                  Chat with {booking.tutor.firstName}
+                </Link>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

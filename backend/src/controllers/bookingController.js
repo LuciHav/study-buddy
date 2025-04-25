@@ -13,7 +13,6 @@ export const getAllBooking = async (req, res, next) => {
   } else if (role === ROLES.TUTOR) {
     whereClause.tutorId = id;
   }
-  // If admin, keep whereClause empty to fetch all
 
   const bookings = await Booking.findAll({
     where: whereClause,
@@ -32,10 +31,25 @@ export const getAllBooking = async (req, res, next) => {
     order: [["createdAt", "DESC"]],
   });
 
+  // Check for completed bookings
+  const currentDate = new Date();
+  const updatedBookings = await Promise.all(
+    bookings.map(async (booking) => {
+      if (
+        booking.status === BOOKING_STATUS.CONFIRMED &&
+        new Date(booking.endDate) < currentDate
+      ) {
+        booking.status = BOOKING_STATUS.COMPLETED;
+        await booking.save();
+      }
+      return booking;
+    })
+  );
+
   res.status(200).json({
     success: true,
     message: "Bookings fetched successfully",
-    bookings,
+    bookings: updatedBookings,
   });
 };
 
@@ -69,12 +83,16 @@ export const getBookingById = async (req, res, next) => {
 };
 
 export const createBookingRequest = async (req, res, next) => {
-  const { tutorId, hours } = req.body;
+  const {
+    tutorId,
+    hours,
+    teachingType,
+    location,
+    startDate,
+    endDate,
+    remarks,
+  } = req.body;
   const userId = req.user.id;
-
-  if (req.user.role !== ROLES.USER) {
-    throw new HttpError(403, "Only users can create booking requests");
-  }
 
   // Check if tutor exists
   const tutor = await User.findOne({
@@ -85,11 +103,41 @@ export const createBookingRequest = async (req, res, next) => {
     throw new HttpError(404, "Tutor not found");
   }
 
+  // Validate teaching type and location
+  if (!["online", "physical"].includes(teachingType)) {
+    throw new HttpError(400, "Invalid teaching type");
+  }
+
+  if (teachingType === "physical" && !location) {
+    throw new HttpError(400, "Location is required for physical teaching");
+  }
+
+  // Validate dates
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+    throw new HttpError(400, "Invalid date format");
+  }
+
+  if (end <= start) {
+    throw new HttpError(400, "End date must be after start date");
+  }
+
+  if (start < new Date()) {
+    throw new HttpError(400, "Start date cannot be in the past");
+  }
+
   // Create booking request
   const booking = await Booking.create({
     userId,
     tutorId,
     hours,
+    teachingType,
+    location,
+    startDate,
+    endDate,
+    remarks,
     status: BOOKING_STATUS.REQUESTED,
   });
 
@@ -188,11 +236,28 @@ export const cancelBooking = async (req, res, next) => {
     throw new HttpError(403, "You are not authorized to cancel this booking");
   }
 
-  // Check if the booking is in a state that can be cancelled
+  // Check if the booking is in a state that can be cancelled or deleted
   if (booking.status === BOOKING_STATUS.CONFIRMED) {
     throw new HttpError(
       400,
       "Cannot cancel a confirmed booking. Please contact support for assistance."
+    );
+  }
+
+  // Allow deletion of completed, rejected, or cancelled bookings
+  const canDelete = [
+    BOOKING_STATUS.COMPLETED,
+    BOOKING_STATUS.REJECTED,
+    BOOKING_STATUS.CANCELLED,
+    BOOKING_STATUS.REQUESTED,
+    BOOKING_STATUS.APPROVED,
+    BOOKING_STATUS.PENDING,
+  ].includes(booking.status);
+
+  if (!canDelete) {
+    throw new HttpError(
+      400,
+      "This booking cannot be deleted in its current state."
     );
   }
 
@@ -201,6 +266,6 @@ export const cancelBooking = async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: "Booking cancelled successfully",
+    message: "Booking deleted successfully",
   });
 };

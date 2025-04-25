@@ -11,21 +11,36 @@ const Booking = sequelize.define("Booking", {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
+  teachingType: {
+    type: DataTypes.ENUM("online", "physical"),
+    allowNull: false,
+    defaultValue: "online",
+  },
+  location: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  startDate: {
+    type: DataTypes.DATE,
+    allowNull: false,
+  },
+  endDate: {
+    type: DataTypes.DATE,
+    allowNull: false,
+  },
   hours: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    validate: {
-      min: 1,
-      max: 1000,
-    },
+  },
+  remarks: {
+    type: DataTypes.TEXT,
+    allowNull: true,
   },
   totalAmount: {
     type: DataTypes.INTEGER,
-    allowNull: true,
   },
   paymentIntentId: {
     type: DataTypes.STRING,
-    allowNull: true,
     unique: true,
   },
   status: {

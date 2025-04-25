@@ -23,6 +23,7 @@ import webhookRoute from "./src/routes/webhookRoute.js";
 import messageRoute from "./src/routes/messageRoute.js";
 import userRoute from "./src/routes/userRoute.js";
 import contactRoute from "./src/routes/contactRoute.js";
+import searchRoutes from "./src/routes/searchRoutes.js";
 
 import "./src/models/index.js";
 
@@ -51,6 +52,7 @@ app.use("/api/v1/bookings", bookingRoute);
 app.use("/api/v1/messages", messageRoute);
 app.use("/api/v1/users", userRoute);
 app.use("/api/v1/contacts", contactRoute);
+app.use("/api/v1/search", searchRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

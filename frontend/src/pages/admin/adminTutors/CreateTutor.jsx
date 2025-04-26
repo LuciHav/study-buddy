@@ -90,7 +90,7 @@ export default function CreateTutor({ onSuccess }) {
       <DialogTrigger asChild>
         <Button variant="outline">Add Tutor</Button>
       </DialogTrigger>
-      <DialogContent className="max-w-3xl">
+      <DialogContent className="min-w-2xl max-w-2xl md:min-w-3xl md:max-w-3xl">
         <DialogHeader>
           <DialogTitle>Add Tutor</DialogTitle>
           <DialogDescription>
@@ -101,7 +101,7 @@ export default function CreateTutor({ onSuccess }) {
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             onKeyDown={handleKeyDown}
-            className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6"
+            className="grid grid-cols-1 gap-4 p-4 md:grid-cols-3 md:gap-6 md:p-6"
           >
             <FormField
               name="firstName"

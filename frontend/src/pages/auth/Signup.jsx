@@ -12,11 +12,13 @@ import { Input } from "@/components/ui/input";
 import { signupSchema } from "@/schemas/authSchema";
 import { postRequest } from "@/utils/apiHelpers";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 
 export default function Signup() {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm({
     resolver: zodResolver(signupSchema),
@@ -30,23 +32,28 @@ export default function Signup() {
   });
 
   async function onSubmit(data) {
-    const resData = await postRequest({ url: "/api/v1/auth/signup", data });
-    if (resData.success) {
-      navigate("/verify-email");
-    } else {
-      console.log("Error:", resData.message);
+    try {
+      setIsLoading(true);
+      const resData = await postRequest({ url: "/api/v1/auth/signup", data });
+      if (resData.success) {
+        navigate("/verify-email");
+      } else {
+        console.log("Error:", resData.message);
+      }
+    } finally {
+      setIsLoading(false);
     }
   }
 
   return (
-    <div className="grid grid-cols-12 gap-6 w-full">
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 w-full">
       <img
-        className="w-full col-span-6"
+        className="hidden md:block w-full col-span-6"
         src="./auth.jpg"
         alt="Authentication image"
       />
-      <div className="col-start-8 col-span-4">
-        <h1 className="text-3xl font-semibold mb-12">
+      <div className="col-span-1 px-4 md:px-0 md:col-start-8 md:col-span-4">
+        <h1 className="text-2xl md:text-3xl font-semibold mb-8 md:mb-12">
           Sign up and start learning
         </h1>
         <Form {...form}>
@@ -127,7 +134,7 @@ export default function Signup() {
                 </FormItem>
               )}
             />
-            <Button className="w-full" type="submit">
+            <Button className="w-full" type="submit" isLoading={isLoading}>
               Sign up
             </Button>
             <NavButton

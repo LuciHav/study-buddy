@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .container {
+        background-color: #f9f9f9;
+        border-radius: 5px;
+        padding: 20px;
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      .verification-code {
+        background-color: #eef2ff;
+        padding: 10px;
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+        margin: 20px 0;
+        border-radius: 5px;
+      }
+      .verify-button {
+        background-color: #4f46e5;
+        color: white;
+        padding: 12px 24px;
+        text-decoration: none;
+        border-radius: 5px;
+        display: inline-block;
+        margin: 20px 0;
+      }
+      .footer {
+        margin-top: 30px;
+        font-size: 12px;
+        color: #666;
+        text-align: center;
+      }
+      .instructions {
+        background-color: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 5px;
+        padding: 15px;
+        margin: 20px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1><%= product_name %></h1>
+      </div>
+
+      <p>Hello <%= firstName %>,</p>
+
+      <p>
+        Welcome to <%= product_name %>! We're excited to have you on board. To
+        get started, please verify your email address using the verification
+        code below.
+      </p>
+
+      <div class="instructions">
+        <p><strong>How to verify your email:</strong></p>
+        <ol>
+          <li>Click the button below to go to the verification page</li>
+          <li>Enter this verification code when prompted:</li>
+        </ol>
+      </div>
+
+      <div class="verification-code"><%= verificationCode %></div>
+
+      <center>
+        <a href="<%= frontend_url %>/verify-email" class="verify-button">
+          Go to Verification Page
+        </a>
+      </center>
+
+      <p>This verification code will expire in 1 hour for security purposes.</p>
+
+      <p>If you did not create an account with us, please ignore this email.</p>
+
+      <div class="footer">
+        <p>&copy; <%= new Date().getFullYear() %> <%= company_name %></p>
+        <p><%= company_address %></p>
+      </div>
+    </div>
+  </body>
+</html>

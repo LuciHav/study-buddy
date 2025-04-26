@@ -11,11 +11,13 @@ import { Input } from "@/components/ui/input";
 import { resetPasswordSchema } from "@/schemas/authSchema";
 import { patchRequest } from "@/utils/apiHelpers";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useSearchParams } from "react-router";
 import { toast } from "sonner";
 
 export default function ResetPassword() {
+  const [isLoading, setIsLoading] = useState(false);
   const [searchParams] = useSearchParams();
   const verificationCode = searchParams.get("verificationCode");
   const navigate = useNavigate();
@@ -30,16 +32,21 @@ export default function ResetPassword() {
   });
 
   async function onSubmit(data) {
-    const resData = await patchRequest({
-      url: "/api/v1/auth/reset-password",
-      data,
-    });
+    try {
+      setIsLoading(true);
+      const resData = await patchRequest({
+        url: "/api/v1/auth/reset-password",
+        data,
+      });
 
-    if (resData.success) {
-      toast.success(resData.message);
-      navigate("/login");
-    } else {
-      console.log("Error:", resData.message);
+      if (resData.success) {
+        toast.success(resData.message);
+        navigate("/login");
+      } else {
+        console.log("Error:", resData.message);
+      }
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -88,7 +95,9 @@ export default function ResetPassword() {
                 </FormItem>
               )}
             />
-            <Button type="submit">Submit</Button>
+            <Button type="submit" isLoading={isLoading}>
+              Submit
+            </Button>
           </form>
         </Form>
       </div>

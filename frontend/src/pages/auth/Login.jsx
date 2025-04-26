@@ -14,10 +14,12 @@ import useAuth from "@/contexts/AuthProvider";
 import { loginSchema } from "@/schemas/authSchema";
 import { postRequest } from "@/utils/apiHelpers";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 
 export default function Login() {
+  const [isLoading, setIsLoading] = useState(false);
   const { setCurrentUser } = useAuth();
   const navigate = useNavigate();
 
@@ -30,26 +32,31 @@ export default function Login() {
   });
 
   async function onSubmit(data) {
-    const resData = await postRequest({ url: "/api/v1/auth/login", data });
-    if (resData.success) {
-      setCurrentUser(resData.user);
-      if (resData.user.role === ROLES.ADMIN) navigate("/admin");
-      else if (resData.user.role === ROLES.TUTOR) navigate("/tutor");
-      else navigate("/");
-    } else {
-      console.log("Error:", resData.message);
+    try {
+      setIsLoading(true);
+      const resData = await postRequest({ url: "/api/v1/auth/login", data });
+      if (resData.success) {
+        setCurrentUser(resData.user);
+        if (resData.user.role === ROLES.ADMIN) navigate("/admin");
+        else if (resData.user.role === ROLES.TUTOR) navigate("/tutor");
+        else navigate("/");
+      } else {
+        console.log("Error:", resData.message);
+      }
+    } finally {
+      setIsLoading(false);
     }
   }
 
   return (
-    <div className="grid grid-cols-12 gap-6 w-full">
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 w-full">
       <img
-        className="w-full col-span-6"
+        className="hidden md:block w-full col-span-6"
         src="./auth.jpg"
         alt="Authentication image"
       />
-      <div className="col-start-8 col-span-4">
-        <h1 className="text-3xl font-semibold mb-12">Login to your account</h1>
+      <div className="col-span-1 px-4 md:px-0 md:col-start-8 md:col-span-4">
+        <h1 className="text-2xl md:text-3xl font-semibold mb-8 md:mb-12">Login to your account</h1>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
@@ -92,7 +99,7 @@ export default function Login() {
                 </FormItem>
               )}
             />
-            <Button className="w-full" type="submit">
+            <Button className="w-full" type="submit" isLoading={isLoading}>
               Login
             </Button>
             <NavButton

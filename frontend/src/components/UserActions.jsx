@@ -56,40 +56,40 @@ export default function UserActions() {
 
   return (
     <div className="flex items-center gap-2 md:gap-4">
-      <div className="hidden md:block relative">
-        <Popover open={isSearchOpen} onOpenChange={setIsSearchOpen}>
-          <PopoverTrigger asChild>
-            <div>
-              <Input
-                ref={inputRef}
-                type="search"
-                placeholder="Search posts and tutors..."
-                className="w-64"
-                value={searchQuery}
-                onChange={handleSearchChange}
-                onFocus={() => setIsSearchOpen(true)}
-              />
-            </div>
-          </PopoverTrigger>
-          <PopoverContent
-            className="w-64 p-0"
-            align="start"
-            onOpenAutoFocus={(e) => e.preventDefault()}
-          >
-            <SearchResults
-              results={searchResults}
-              isLoading={isSearching}
-              searchQuery={searchQuery}
-              onSelect={() => {
-                setIsSearchOpen(false);
-                setSearchQuery("");
-              }}
-            />
-          </PopoverContent>
-        </Popover>
-      </div>
       {currentUser ? (
         <>
+          <div className="hidden md:block relative">
+            <Popover open={isSearchOpen} onOpenChange={setIsSearchOpen}>
+              <PopoverTrigger asChild>
+                <div>
+                  <Input
+                    ref={inputRef}
+                    type="search"
+                    placeholder="Search posts and tutors..."
+                    className="w-64"
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                    onFocus={() => setIsSearchOpen(true)}
+                  />
+                </div>
+              </PopoverTrigger>
+              <PopoverContent
+                className="w-64 p-0"
+                align="start"
+                onOpenAutoFocus={(e) => e.preventDefault()}
+              >
+                <SearchResults
+                  results={searchResults}
+                  isLoading={isSearching}
+                  searchQuery={searchQuery}
+                  onSelect={() => {
+                    setIsSearchOpen(false);
+                    setSearchQuery("");
+                  }}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
           <span
             className="hover:cursor-pointer"
             onClick={() => navigate("/profile")}

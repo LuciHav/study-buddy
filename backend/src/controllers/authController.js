@@ -2,7 +2,7 @@ import { Op } from "sequelize";
 import User from "../models/User.js";
 import { generateRandomCode } from "../utils/helpers.js";
 import HttpError from "../utils/HttpError.js";
-import sendEmailWithTemplate from "../services/postmark.js";
+import sendEmailWithTemplate from "../services/nodemailer.js";
 import { EMAIL_TEMPLATES } from "../constants/index.js";
 
 export const signupUser = async (req, res) => {
@@ -102,7 +102,7 @@ export const forgotPassword = async (req, res, _next) => {
 
   // Send verification email
   await sendEmailWithTemplate(email, EMAIL_TEMPLATES.PASSWORD_RESET, {
-    name: user.firstName,
+    firstName: user.firstName,
     verificationCode,
   });
 

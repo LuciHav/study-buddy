@@ -45,14 +45,14 @@ export default function VerifyEmail() {
   }
 
   return (
-    <div className="grid grid-cols-12 gap-6 w-full">
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 w-full">
       <img
-        className="w-full col-span-6"
+        className="hidden md:block w-full col-span-6"
         src="./auth.jpg"
         alt="Authentication image"
       />
-      <div className="col-start-8 col-span-4">
-        <h1 className="text-3xl font-semibold mb-12">Verify your email</h1>
+      <div className="col-span-1 px-4 md:px-0 md:col-start-8 md:col-span-4">
+        <h1 className="text-2xl md:text-3xl font-semibold mb-8 md:mb-12">Verify your email</h1>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField

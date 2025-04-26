@@ -9,6 +9,11 @@ export const EMAIL_TEMPLATES = {
   PASSWORD_RESET: "password-reset",
 };
 
+export const EMAIL_TEMPLATE_SUBJECTS = {
+  [EMAIL_TEMPLATES.WELCOME]: "Welcome to Study Buddy - Verify Your Email",
+  [EMAIL_TEMPLATES.PASSWORD_RESET]: "Reset Your Password",
+};
+
 export const SUBJECTS = {
   MATHEMATICS: "Mathematics",
   PHYSICS: "Physics",
@@ -34,11 +39,11 @@ export const REPORT_STATUS = {
 };
 
 export const BOOKING_STATUS = {
-  REQUESTED: "requested",   // Initial state
-  APPROVED: "approved",     // Tutor approved
-  REJECTED: "rejected",     // Tutor rejected
-  PENDING: "pending",       // Payment initiated
-  CONFIRMED: "confirmed",   // Payment confirmed
-  CANCELLED: "cancelled",   // Booking cancelled
-  COMPLETED: "completed",   // Booking completed
+  REQUESTED: "requested", // Initial state
+  APPROVED: "approved", // Tutor approved
+  REJECTED: "rejected", // Tutor rejected
+  PENDING: "pending", // Payment initiated
+  CONFIRMED: "confirmed", // Payment confirmed
+  CANCELLED: "cancelled", // Booking cancelled
+  COMPLETED: "completed", // Booking completed
 };

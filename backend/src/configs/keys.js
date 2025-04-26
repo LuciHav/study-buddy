@@ -21,7 +21,10 @@ export default {
     password: process.env.ADMIN_PASSWORD,
   },
   email: {
-    postmark: process.env.POSTMARK_API_KEY,
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
+    user: process.env.EMAIL_USER,
+    password: process.env.EMAIL_PASSWORD,
     senderName: process.env.EMAIL_SENDER_NAME,
     senderAddress: process.env.EMAIL_SENDER_ADDRESS,
   },
